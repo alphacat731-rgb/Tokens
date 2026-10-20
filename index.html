@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="TOKEN: absolutely nothing. Earn it anyway. Collect a completely useless virtual currency just by leaving this tab open.">
+  <meta property="og:title" content="TOKEN — Absolutely nothing. Earn it anyway.">
+  <meta property="og:description" content="Five Tokens every five minutes. No value, no purpose, no problem.">
+  <meta property="og:type" content="website">
+  <title>TOKEN — Absolutely nothing. Earn it anyway.</title>
+  <link rel="icon" type="image/png" href="assets/token-cube.png">
+  <link rel="apple-touch-icon" href="assets/token-cube.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav shell" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="TOKEN home">
+        <img src="assets/token-cube.png" width="38" height="38" alt="">
+        <span>TOKEN<span class="brand-period">.</span></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link active" href="#earn">Earn</a>
+        <a class="nav-link" href="#leaderboard">Leaderboard</a>
+        <a class="nav-link" href="#about">The point</a>
+      </div>
+      <div class="nav-actions">
+        <button class="icon-button settings-button" type="button" data-open-settings aria-label="Open settings" title="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.08-.02a1.7 1.7 0 0 0-1.7.55l-.05.07h-3.4l-.03-.08a1.7 1.7 0 0 0-1.48-1.04 1.7 1.7 0 0 0-1.22.5l-.06.06-2.94-1.7.02-.08a1.7 1.7 0 0 0-.55-1.7l-.07-.05v-3.4l.08-.03a1.7 1.7 0 0 0 1.04-1.48 1.7 1.7 0 0 0-.5-1.22l-.06-.06 1.7-2.94.08.02a1.7 1.7 0 0 0 1.7-.55l.05-.07h3.4l.03.08a1.7 1.7 0 0 0 1.48 1.04 1.7 1.7 0 0 0 1.22-.5l.06-.06 2.94 1.7-.02.08a1.7 1.7 0 0 0 .55 1.7l.07.05v3.4z"></path></svg>
+        </button>
+        <button class="profile-pill" type="button" data-open-profile>
+          <span class="avatar" aria-hidden="true">G</span>
+          <span class="profile-pill-name" id="nav-username">Guest</span>
+          <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"></path></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" class="shell">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> THE INTERNET'S LEAST USEFUL CURRENCY</div>
+        <h1 id="hero-title">Absolutely nothing.<br><span>Earn it anyway.</span></h1>
+        <p class="hero-description">A little counter. A very big number. An achievement that impresses absolutely nobody. Welcome to TOKEN.</p>
+        <div class="hero-actions">
+          <a class="button button-dark" href="#earn">Start earning <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#leaderboard">Meet the competition <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-footnote"><span class="tiny-cube" aria-hidden="true">◇</span> No wallet. No investment. No point.</div>
+      </div>
+      <aside class="wallet-card" aria-label="Your Token balance">
+        <div class="wallet-topline"><span class="micro-label">YOUR EXTREMELY REAL BALANCE</span><span class="live-indicator"><span></span> ON THE CLOCK</span></div>
+        <div class="wallet-balance-line">
+          <span class="wallet-balance" id="balance" aria-live="polite" aria-atomic="true">0</span>
+          <span class="token-wordmark"><img src="assets/token-cube.png" alt="" width="27" height="27"> TOKENS</span>
+        </div>
+        <div class="wallet-divider"></div>
+        <div class="wallet-progress-head"><span>Next utterly pointless payout</span><strong id="wallet-countdown">05:00</strong></div>
+        <div class="progress-track" role="progressbar" aria-label="Progress to next Token reward" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="wallet-progress"><span id="wallet-progress-fill"></span></div>
+        <div class="wallet-foot"><span><span class="mini-cube-dot"></span> +5 Tokens every 5 minutes</span><span id="wallet-percent">0% complete</span></div>
+        <img class="wallet-watermark" src="assets/token-cube.png" alt="" aria-hidden="true">
+      </aside>
+    </section>
+
+    <section class="earn-section section-space" id="earn" aria-labelledby="earn-title">
+      <div class="section-heading">
+        <div><div class="section-index">01 / THE BUSINESS MODEL</div><h2 id="earn-title">Doing nothing, <em>beautifully.</em></h2></div>
+        <p class="section-aside">Your only job is to keep this tab open.<br>Finally, a job you're overqualified for.</p>
+      </div>
+      <div class="earn-grid">
+        <article class="earn-card timer-card">
+          <div class="card-overline"><span class="status-dot"></span> PASSIVE EARNING <span class="card-overline-right">AUTOPILOT, SORT OF</span></div>
+          <div class="timer-body">
+            <div class="timer-dial" id="timer-dial" style="--progress:0%">
+              <div class="timer-dial-inner">
+                <span class="dial-label">NEXT IN</span>
+                <strong id="main-countdown">05:00</strong>
+                <span class="dial-subtitle">until the void pays</span>
+              </div>
+            </div>
+            <div class="timer-copy">
+              <h3>Time well wasted.</h3>
+              <p>Every five minutes this page is open, five Tokens materialize. It is, technically, a return on your time.</p>
+              <div class="earning-rate"><img src="assets/token-cube.png" alt="" width="22" height="22"><span><strong>+5 TOKENS</strong><small>per completed interval</small></span></div>
+              <div class="timer-note" id="timer-status" aria-live="polite">Your shift has begun. Try to look busy.</div>
+            </div>
+          </div>
+          <div class="card-bottom-row"><span><span class="tiny-lock" aria-hidden="true">◷</span> Time is counted only while this page is open.</span><span class="local-tag">LOCAL GUEST MODE</span></div>
+        </article>
+
+        <article class="ad-card">
+          <div class="ad-top"><span class="ad-label">SPONSORED BY ABSOLUTELY NOBODY</span><span class="ad-sparkle" aria-hidden="true">✳</span></div>
+          <div class="ad-art" aria-hidden="true">
+            <div class="ad-sun"></div><div class="ad-box"><div class="ad-box-mark">∅</div></div>
+            <div class="ad-art-stamp">100%<br>NOTHING</div>
+          </div>
+          <div class="ad-content">
+            <div class="ad-mini-title">A MESSAGE FROM OUR IMAGINARY PARTNERS</div>
+            <h3>One tiny ad.<br><em>Fifteen less-useless Tokens.</em></h3>
+            <p>Watch eight seconds of premium nonsense. Your attention deserves compensation. Probably.</p>
+            <button class="button button-gold button-full" id="watch-ad" type="button"><span class="play-icon" aria-hidden="true">▶</span> Watch a fake ad <span class="button-trailing">+15</span></button>
+            <p class="ad-disclaimer" id="ad-cooldown-note">Simulated ad · no tracking, no advertisers, no product.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="leaderboard-section section-space" id="leaderboard" aria-labelledby="leaderboard-title">
+      <div class="section-heading leaderboard-heading">
+        <div><div class="section-index">02 / THE TOTALLY SERIOUS RANKINGS</div><h2 id="leaderboard-title">A small hall of <em>pointlessness.</em></h2></div>
+        <span class="demo-stamp"><span class="demo-stamp-dot"></span> DEMO LEADERBOARD</span>
+      </div>
+      <div class="leaderboard-panel">
+        <div class="leaderboard-toolbar">
+          <div class="tab-list" role="tablist" aria-label="Leaderboard period">
+            <button class="leader-tab active" role="tab" aria-selected="true" type="button" data-period="today">Today</button>
+            <button class="leader-tab" role="tab" aria-selected="false" type="button" data-period="week">This week</button>
+            <button class="leader-tab" role="tab" aria-selected="false" type="button" data-period="all">All time</button>
+          </div>
+          <label class="search-field"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg><span class="sr-only">Search leaderboard usernames</span><input id="leader-search" type="search" placeholder="Find a contender..." maxlength="24"></label>
+        </div>
+        <div class="podium" id="podium" aria-label="Top three sample players"></div>
+        <div class="leader-list-head"><span>RANK / PLAYER</span><span>TOKENS EARNED</span><span class="rank-change-label">VIBE CHECK</span></div>
+        <div class="leader-list" id="leader-list" aria-live="polite"></div>
+        <div class="leaderboard-bottom"><span id="leaderboard-count">Showing sample players</span><span class="leaderboard-note">Fictional people. Impressive numbers. Entirely fake.</span></div>
+      </div>
+      <p class="leaderboard-disclaimer">This is sample data for the demo. Your guest balance lives only in this browser and is not submitted to any global ranking.</p>
+    </section>
+
+    <section class="insights-grid section-space">
+      <article class="activity-card">
+        <div class="section-index">03 / PROOF OF NON-WORK</div>
+        <div class="insights-title-row"><h2>Recent <em>nonsense.</em></h2><span class="activity-icon" aria-hidden="true">↗</span></div>
+        <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
+      </article>
+      <article class="achievements-card">
+        <div class="section-index">04 / BADGES OF QUESTIONABLE HONOUR</div>
+        <div class="insights-title-row"><h2>Achievements<span class="quiet-count" id="achievement-count">0 / 4</span></h2></div>
+        <p class="achievement-intro">Little milestones for a very little life.</p>
+        <div id="achievement-grid" class="achievement-grid"></div>
+      </article>
+    </section>
+
+    <section class="about-strip" id="about" aria-labelledby="about-title">
+      <div class="about-mark"><img src="assets/token-cube.png" alt="" width="52" height="52"></div>
+      <div><div class="section-index">A QUICK, COMPLETELY UNNECESSARY DISCLAIMER</div><h2 id="about-title">Tokens are worth <em>absolutely nothing.</em></h2><p>They can't be bought, sold, transferred, redeemed, or used to impress your financial adviser. They're just numbers going up. Please enjoy responsibly.</p></div>
+      <a href="#top" class="back-top">Back to the top ↑</a>
+    </section>
+  </main>
+
+  <footer class="site-footer shell"><a class="footer-brand" href="#top">TOKEN<span>.</span></a><span>Made with 0% purpose and 100% unnecessary enthusiasm.</span><span class="footer-right">© <span id="year"></span> TOKEN · NO VALUE, NO WORRIES</span></footer>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <div class="particle-layer" id="particle-layer" aria-hidden="true"></div>
+
+  <dialog class="app-dialog profile-dialog" id="profile-dialog" aria-labelledby="profile-title">
+    <div class="dialog-top"><div><div class="section-index">YOUR PERSONAL NOTHING</div><h2 id="profile-title">Guest <em>profile.</em></h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close profile">×</button></div>
+    <div class="profile-summary"><div class="avatar avatar-large" aria-hidden="true">G</div><div><span class="micro-label">LOCAL GUEST</span><strong id="profile-summary-name">Guest</strong><small>Your data stays in this browser.</small></div><div class="profile-total"><strong id="profile-balance">0</strong><span>TOKENS</span></div></div>
+    <form id="username-form" class="username-form">
+      <label for="username-input">Choose your leaderboard alias</label>
+      <div class="input-action-row"><input id="username-input" name="username" type="text" maxlength="18" minlength="2" autocomplete="nickname" required placeholder="e.g. Professionally Idle"><button class="button button-dark" type="submit">Save name</button></div>
+      <p class="field-help">2–18 characters. This name is only saved on this device.</p>
+    </form>
+    <div class="stat-grid"><div class="stat-box"><span>TOTAL EARNED</span><strong id="profile-earned">0</strong></div><div class="stat-box"><span>FAKE ADS WATCHED</span><strong id="profile-ads">0</strong></div><div class="stat-box"><span>MEMBERS SINCE</span><strong id="profile-joined">Today</strong></div></div>
+    <div class="dialog-section-title">Your questionable achievements</div><div class="profile-achievement-list" id="profile-achievement-list"></div>
+    <div class="dialog-footer"><span>Guest account · no login required</span><button class="text-button" type="button" data-open-settings>Open settings ↗</button></div>
+  </dialog>
+
+  <dialog class="app-dialog settings-dialog" id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-top"><div><div class="section-index">TWEAK THE VOID</div><h2 id="settings-title">Settings<span>.</span></h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close settings">×</button></div>
+    <div class="settings-row"><div><strong>Animations</strong><p>Keep the cube bobbing and the numbers feeling fancy.</p></div><label class="switch"><input id="motion-toggle" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Enable animations</span></label></div>
+    <div class="settings-row"><div><strong>Local storage</strong><p>Your balance is saved in this browser, not online.</p></div><span class="storage-status" id="storage-status">Checking…</span></div>
+    <div class="settings-row"><div><strong>Reset everything</strong><p>Delete your balance, timer, name, and guest activity from this device.</p></div><button class="button button-danger-outline" type="button" id="open-reset">Reset</button></div>
+    <div class="settings-note"><span aria-hidden="true">ⓘ</span> TOKEN is a harmless local demo. Client-side balances can be edited by the device owner and are not cheat-proof.</div>
+  </dialog>
+
+  <dialog class="app-dialog reset-dialog" id="reset-dialog" aria-labelledby="reset-title">
+    <div class="reset-icon" aria-hidden="true">↺</div><div class="section-index">A CLEAN SLATE</div><h2 id="reset-title">Really start from zero?</h2><p>This deletes your locally saved Tokens, timer progress, achievements, and guest history. The void will remember nothing.</p><div class="dialog-actions"><button class="button button-outline" type="button" data-close-dialog>Keep my nothing</button><button class="button button-danger" type="button" id="confirm-reset">Reset everything</button></div>
+  </dialog>
+
+  <dialog class="app-dialog ad-dialog" id="ad-dialog" aria-labelledby="ad-title">
+    <div class="dialog-top ad-dialog-top"><div><div class="section-index">SIMULATED ADVERTISEMENT · 100% FICTIONAL</div><h2 id="ad-title">A word from <em>nobody.</em></h2></div><button class="dialog-close" type="button" id="close-ad" aria-label="Close advertisement">×</button></div>
+    <div class="fake-ad-creative" id="fake-ad-creative"><div class="creative-kicker" id="creative-kicker">INTRODUCING SOMETHING</div><div class="creative-object" id="creative-object" aria-hidden="true">∅</div><div class="creative-copy"><h3 id="creative-title">Nothing, now in premium.</h3><p id="creative-description">The exact same empty space. But it costs nothing, too.</p></div><span class="creative-brand" id="creative-brand">IMAGINARY™</span></div>
+    <div class="ad-progress-area"><div class="ad-progress-label"><span id="ad-progress-message">Your attention is being wasted…</span><strong id="ad-countdown">8s</strong></div><div class="progress-track ad-progress-track" role="progressbar" aria-label="Simulated ad completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ad-progress"><span id="ad-progress-fill"></span></div></div>
+    <div class="ad-complete-message" id="ad-complete-message" hidden><span class="complete-check" aria-hidden="true">✓</span><div><strong>Congratulations on being advertised at.</strong><p>+15 Tokens have been added to your not-at-all-valuable balance.</p></div></div>
+    <div class="dialog-actions ad-dialog-actions"><span class="ad-earn-note"><img src="assets/token-cube.png" alt="" width="19" height="19"><span>Reward: <strong>15 Tokens</strong></span></span><button class="button button-dark" type="button" id="ad-done" disabled>Almost nothing…</button></div>
+  </dialog>
+</body>
+</html>
