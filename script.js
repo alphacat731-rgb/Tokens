@@ -8,9 +8,9 @@
   const AD_REWARD = 15;
   const AD_DURATION = 8000;
   const AD_COOLDOWN = 30000;
-  const LOCK_TTL = 7000;
+  const LOCK_TTL = 75000;
   const HEARTBEAT_EVERY = 1000;
-  const MAX_COUNTED_GAP = 12000;
+  const MAX_COUNTED_GAP = 65000;
   const numberFormat = new Intl.NumberFormat("en-US");
   const thresholds = [
     { id: 100, label: "First century", note: "100 Tokens", icon: "✦" },
@@ -594,7 +594,7 @@
   }
 
   function startAd() {
-    if (adTickHandle || byId("watch-ad").disabled || adFinished) return;
+    if (adTickHandle || byId("watch-ad").disabled || byId("ad-dialog").open) return;
     selectedAd = ads[Math.floor(Math.random() * ads.length)];
     adStartedAt = Date.now();
     adFinished = false;
