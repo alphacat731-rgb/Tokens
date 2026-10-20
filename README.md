@@ -40,7 +40,8 @@ Client-side balances can be changed by the device owner. This project is a playf
 - index.html — accessible application shell and dialogs
 - styles.css — responsive design system, animations, and reduced-motion support
 - script.js — local guest state, earning timer, fake ads, profile, achievements, and sample leaderboard
-- assets/token-cube.png — supplied TOKEN cube symbol
+- assets/token-cube.png — the supplied, pixel-identical TOKEN cube symbol
+- assets/token-cube-dark.png — an alpha-preserving dark-stroke variant for favicon contrast
 - .github/workflows/pages.yml — GitHub Pages deployment
 
 ## Privacy
