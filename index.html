@@ -18,7 +18,7 @@
   <script src="supabase-config.js" defer></script>
   <script src="script.js" defer></script>
 </head>
-<body>
+<body class="studio-ui">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <nav class="nav shell" aria-label="Main navigation">
@@ -33,6 +33,10 @@
         <a class="nav-link" href="#about"><span class="material-symbols-rounded nav-icon" aria-hidden="true">info</span>The point</a>
       </div>
       <div class="nav-actions">
+        <button class="ui-mode-button" id="ui-mode-toggle" type="button" aria-label="Switch to Classic interface" aria-pressed="true" title="Studio interface selected. Click to switch to Classic.">
+          <span class="material-symbols-rounded ui-mode-symbol" aria-hidden="true">view_quilt</span>
+          <span class="ui-mode-label" id="ui-mode-label">Studio</span>
+        </button>
         <button class="icon-button settings-button" type="button" data-open-settings aria-label="Open settings" title="Settings">
           <span class="material-symbols-rounded" aria-hidden="true">settings</span>
         </button>
