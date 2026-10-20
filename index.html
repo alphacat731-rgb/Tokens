@@ -25,6 +25,7 @@
       </a>
       <div class="nav-links">
         <a class="nav-link active" href="#earn">Earn</a>
+        <a class="nav-link" href="#shop">Token shop</a>
         <a class="nav-link" href="#leaderboard">Leaderboard</a>
         <a class="nav-link" href="#about">The point</a>
       </div>
@@ -110,9 +111,42 @@
       </div>
     </section>
 
+    <section class="shop-section section-space" id="shop" aria-labelledby="shop-title">
+      <div class="section-heading">
+        <div><div class="section-index">02 / SPEND A LITTLE NOTHING</div><h2 id="shop-title">Put your Tokens <em>to work.</em></h2></div>
+        <p class="section-aside">Useful boosts. No real money.<br>Finally, a reason to hoard these things.</p>
+      </div>
+      <div class="shop-status-row">
+        <div><span class="shop-status-dot" aria-hidden="true"></span><span id="shop-mode">LOCAL SHOP · PURCHASES SAVED ON THIS DEVICE</span></div>
+        <div class="shop-wallet">AVAILABLE <strong id="shop-balance">0</strong> <span>TOKENS</span></div>
+      </div>
+      <div class="shop-grid">
+        <article class="shop-item">
+          <div class="shop-item-top"><span class="shop-item-icon boost-double" aria-hidden="true">×2</span><span class="shop-item-tag">BEST FOR IDLING</span></div>
+          <h3>Double Shift</h3><p class="shop-item-description">Double passive Token payouts for 15 minutes. Your doing-nothing efficiency has doubled.</p>
+          <div class="shop-item-meta"><span>15 MINUTES</span><strong>250 <small>TOKENS</small></strong></div>
+          <button class="button button-dark button-full shop-buy" type="button" data-buy-boost="double">Buy Double Shift <span aria-hidden="true">↗</span></button>
+        </article>
+        <article class="shop-item">
+          <div class="shop-item-top"><span class="shop-item-icon boost-ad" aria-hidden="true">+15</span><span class="shop-item-tag">AD BOOST</span></div>
+          <h3>Ad Bonus Pack</h3><p class="shop-item-description">Get 15 extra Tokens on each of your next three completed fake ads. Yes, the ads are still fake.</p>
+          <div class="shop-item-meta"><span>3 COMPLETED ADS</span><strong>180 <small>TOKENS</small></strong></div>
+          <button class="button button-dark button-full shop-buy" type="button" data-buy-boost="ad">Buy Ad Bonus <span aria-hidden="true">↗</span></button>
+        </article>
+        <article class="shop-item">
+          <div class="shop-item-top"><span class="shop-item-icon boost-time" aria-hidden="true">↯</span><span class="shop-item-tag">INSTANT BOOST</span></div>
+          <h3>Time Skip</h3><p class="shop-item-description">Jump your passive timer forward by one minute. Because waiting is technically a skill.</p>
+          <div class="shop-item-meta"><span>+60 SECONDS</span><strong>75 <small>TOKENS</small></strong></div>
+          <button class="button button-dark button-full shop-buy" type="button" data-buy-boost="time">Buy Time Skip <span aria-hidden="true">↗</span></button>
+        </article>
+      </div>
+      <div class="active-boosts" id="active-boosts" aria-live="polite"><span class="active-boosts-label">ACTIVE BOOSTS</span><span id="active-boosts-copy">No boosts active. The grind remains unmodified.</span></div>
+      <p class="shop-footnote">Boosts and purchases are saved in this browser only. They do not transfer to another device. Local shop purchases are unavailable if a shared server balance is enabled.</p>
+    </section>
+
     <section class="leaderboard-section section-space" id="leaderboard" aria-labelledby="leaderboard-title">
       <div class="section-heading leaderboard-heading">
-        <div><div class="section-index">02 / THE TOTALLY SERIOUS RANKINGS</div><h2 id="leaderboard-title">A small hall of <em>pointlessness.</em></h2></div>
+        <div><div class="section-index">03 / THE TOTALLY SERIOUS RANKINGS</div><h2 id="leaderboard-title">A small hall of <em>pointlessness.</em></h2></div>
         <span class="demo-stamp"><span class="demo-stamp-dot"></span> <span id="leaderboard-mode-label">DEMO LEADERBOARD</span></span>
       </div>
       <div class="leaderboard-panel">
@@ -134,12 +168,12 @@
 
     <section class="insights-grid section-space">
       <article class="activity-card">
-        <div class="section-index">03 / PROOF OF NON-WORK</div>
+        <div class="section-index">04 / PROOF OF NON-WORK</div>
         <div class="insights-title-row"><h2>Recent <em>nonsense.</em></h2><span class="activity-icon" aria-hidden="true">↗</span></div>
         <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
       </article>
       <article class="achievements-card">
-        <div class="section-index">04 / BADGES OF QUESTIONABLE HONOUR</div>
+        <div class="section-index">05 / BADGES OF QUESTIONABLE HONOUR</div>
         <div class="insights-title-row"><h2>Achievements<span class="quiet-count" id="achievement-count">0 / 4</span></h2></div>
         <p class="achievement-intro">Little milestones for a very little life.</p>
         <div id="achievement-grid" class="achievement-grid"></div>
