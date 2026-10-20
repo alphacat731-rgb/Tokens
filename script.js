@@ -367,7 +367,7 @@
     stage.classList.add("is-visible");
     byId("balance").classList.add("balance-pop");
     byId("wallet-card")?.classList.add("is-rewarding");
-    const count = milestone ? 18 : 10;
+    const count = milestone ? 30 : 18;
     for (let i = 0; i < count; i++) {
       const spark = document.createElement("span");
       spark.className = "reward-spark-particle";
@@ -872,7 +872,7 @@
       : byId("timer-dial").getBoundingClientRect();
     const sourceX = source.left + source.width / 2;
     const sourceY = source.top + source.height / 2;
-    const count = 10;
+    const count = 16;
     for (let i = 0; i < count; i++) {
       const particle = document.createElement("img");
       particle.src = "assets/token-cube-dark.png";
