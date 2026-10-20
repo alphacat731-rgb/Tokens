@@ -249,7 +249,8 @@
       checkMilestones(oldTotal);
       saveState();
       renderAll(true);
-      spawnParticles();
+      spawnParticles(rewardType === "ad" ? byId("fake-ad-creative") : byId("timer-dial"));
+      animateNewMilestones(oldTotal);
       showRewardMoment(amount, state.totalEarned > oldTotal && thresholds.some(item => oldTotal < item.id && state.totalEarned >= item.id));
       if (backendReady) void refreshRemoteLeaderboard();
       return true;
@@ -269,7 +270,8 @@
       checkMilestones(oldTotal);
       saveState();
       renderAll(true);
-      spawnParticles();
+      spawnParticles(rewardType === "ad" ? byId("fake-ad-creative") : byId("timer-dial"));
+      animateNewMilestones(oldTotal);
       showRewardMoment(amount, thresholds.some(item => oldTotal < item.id && state.totalEarned >= item.id));
       if (!liveModeErrorShown) {
         showToast("Global board offline", "This reward is saved locally for now; shared rankings need a connection.", "!");
@@ -279,6 +281,23 @@
     } finally {
       awardInFlight = false;
     }
+  }
+
+  function animateNewMilestones(previousTotal) {
+    if (document.body.classList.contains("reduce-motion")) return;
+    thresholds.filter(item => previousTotal < item.id && state.totalEarned >= item.id).forEach(item => {
+      window.setTimeout(() => {
+        const card = Array.from(document.querySelectorAll(".achievement")).find(el => {
+          const goal = el.querySelector(".achievement-goal");
+          return goal && goal.textContent.replace(/,/g, "") === String(item.id);
+        });
+        if (!card) return;
+        card.classList.remove("just-unlocked");
+        void card.offsetWidth;
+        card.classList.add("just-unlocked");
+        window.setTimeout(() => card.classList.remove("just-unlocked"), 950);
+      }, 40);
+    });
   }
 
   function showRewardMoment(amount, milestone) {
@@ -356,6 +375,8 @@
 
   function renderTimer() {
     const progress = Math.min(1, state.progressMs / EARNING_INTERVAL);
+    const dial = byId("timer-dial");
+    dial.classList.toggle("is-almost-there", progress >= 0.965 && progress < 1);
     const remaining = Math.max(0, EARNING_INTERVAL - state.progressMs);
     const countdown = formatCountdown(remaining);
     byId("main-countdown").textContent = countdown;
@@ -782,29 +803,36 @@
     }, 3600);
   }
 
-  function spawnParticles() {
+  function spawnParticles(sourceElement) {
     if (document.body.classList.contains("reduce-motion")) return;
     const layer = byId("particle-layer");
-    const source = byId("balance").getBoundingClientRect();
-    const targetX = source.left + source.width / 2;
-    const targetY = source.top + source.height / 2;
-    const count = 8;
+    const target = byId("balance").getBoundingClientRect();
+    const targetX = target.left + target.width / 2;
+    const targetY = target.top + target.height / 2;
+    const source = sourceElement && sourceElement.getBoundingClientRect
+      ? sourceElement.getBoundingClientRect()
+      : byId("timer-dial").getBoundingClientRect();
+    const sourceX = source.left + source.width / 2;
+    const sourceY = source.top + source.height / 2;
+    const count = 10;
     for (let i = 0; i < count; i++) {
       const particle = document.createElement("img");
-      particle.src = "assets/token-cube.png";
+      particle.src = "assets/token-cube-dark.png";
       particle.alt = "";
       particle.className = "reward-particle";
-      const startX = Math.max(8, Math.min(window.innerWidth - 20, targetX + (Math.random() - .5) * 100));
-      const startY = Math.max(8, Math.min(window.innerHeight - 20, targetY + 50 + Math.random() * 65));
+      const startX = Math.max(8, Math.min(window.innerWidth - 20, sourceX + (Math.random() - .5) * Math.min(100, source.width * .8)));
+      const startY = Math.max(8, Math.min(window.innerHeight - 20, sourceY + (Math.random() - .5) * Math.min(70, source.height * .6)));
       particle.style.left = startX + "px";
       particle.style.top = startY + "px";
       particle.style.setProperty("--x", "0px");
       particle.style.setProperty("--y", "0px");
       particle.style.setProperty("--dx", (targetX - startX) + "px");
       particle.style.setProperty("--dy", (targetY - startY) + "px");
-      particle.style.animationDelay = (i * 22) + "ms";
+      particle.style.animationDelay = (i * 28) + "ms";
+      particle.style.width = (11 + Math.random() * 7) + "px";
+      particle.style.height = particle.style.width;
       layer.append(particle);
-      window.setTimeout(() => particle.remove(), 1050);
+      window.setTimeout(() => particle.remove(), 1150);
     }
   }
 
@@ -915,7 +943,13 @@
     byId("ad-countdown").textContent = granted ? "Done" : "No reward";
     byId("ad-progress-fill").style.width = "100%";
     byId("ad-progress").setAttribute("aria-valuenow", "100");
-    byId("ad-complete-message").hidden = !granted;
+    const completion = byId("ad-complete-message");
+    completion.hidden = !granted;
+    completion.classList.remove("reward-confirmed");
+    if (granted && !document.body.classList.contains("reduce-motion")) {
+      void completion.offsetWidth;
+      completion.classList.add("reward-confirmed");
+    }
     byId("ad-done").disabled = false;
     byId("ad-done").textContent = "Back to nothing";
     renderCooldown();

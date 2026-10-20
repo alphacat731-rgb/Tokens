@@ -29,3 +29,15 @@
 @keyframes reward-orbit-burst{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(0) scale(.3)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(var(--distance)) scale(.15)}}
 @media(max-width:720px){.reward-stage{top:75px;right:7px;transform:scale(.86);transform-origin:top right}.reward-stage.is-visible{animation:reward-stage-enter-mobile .35s cubic-bezier(.16,1.4,.35,1) forwards}.wallet-card.is-rewarding{transform:translateY(-1px)}}
 @keyframes reward-stage-enter-mobile{0%{opacity:0;transform:translateY(8px) scale(.55)}55%{opacity:1;transform:translateY(-2px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(.86)}}
+
+/* Countdown anticipation: only the final few seconds get a gentle breathing cue. */
+.timer-dial.is-almost-there{box-shadow:0 0 0 5px rgba(179,138,69,.08),0 0 0 10px rgba(179,138,69,.035)}
+.timer-dial.is-almost-there .timer-dial-inner{animation:token-countdown-breathe 1.35s ease-in-out infinite}
+.timer-dial.is-almost-there .dial-label{color:#a17c3e}
+.achievement.just-unlocked{animation:token-achievement-pop .78s cubic-bezier(.18,1.45,.35,1);border-color:#c7a45f;box-shadow:0 0 0 4px rgba(179,138,69,.1)}
+.reward-particle{filter:brightness(.56) sepia(.12) saturate(.8);will-change:transform,opacity}
+.ad-complete-message.reward-confirmed{animation:token-ad-reward-confirm .55s cubic-bezier(.18,1.5,.35,1)}
+@keyframes token-countdown-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.026)}}
+@keyframes token-achievement-pop{0%{transform:scale(1)}38%{transform:scale(1.075) rotate(-1deg)}72%{transform:scale(.99)}100%{transform:scale(1)}}
+@keyframes token-ad-reward-confirm{0%{opacity:.65;transform:translateY(4px) scale(.95)}65%{opacity:1;transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.timer-dial.is-almost-there .timer-dial-inner,.achievement.just-unlocked,.ad-complete-message.reward-confirmed{animation:none!important}.timer-dial.is-almost-there{box-shadow:0 0 0 3px rgba(179,138,69,.06)}}
