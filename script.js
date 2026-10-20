@@ -124,12 +124,13 @@
     version: 1,
     username: "Guest-" + guestSuffix(),
     balance: 0,
+    prismCoins: 0,
     totalEarned: 0,
     adsWatched: 0,
     progressMs: 0,
     joinedAt: Date.now(),
     adCooldownUntil: 0,
-    boosts: { doubleUntil: 0, bonusAdsRemaining: 0 },
+    boosts: { doubleUntil: 0, bonusAdsRemaining: 0, prismUntil: 0 },
     unlocked: [],
     activity: [{ text: "Clocked in for a shift of doing nothing.", delta: "", time: Date.now(), kind: "welcome" }],
     updatedAt: Date.now()
@@ -169,12 +170,14 @@
         ...parsed,
         username: sanitizeName(parsed.username || ("Guest-" + guestSuffix())),
         balance: Math.max(0, Math.floor(Number(parsed.balance) || 0)),
+        prismCoins: Math.max(0, Math.floor(Number(parsed.prismCoins) || 0)),
         totalEarned: Math.max(0, Math.floor(Number(parsed.totalEarned) || 0)),
         adsWatched: Math.max(0, Math.floor(Number(parsed.adsWatched) || 0)),
         progressMs: Math.max(0, Math.min(EARNING_INTERVAL - 1, Number(parsed.progressMs) || 0)),
         adCooldownUntil: Math.max(0, Number(parsed.adCooldownUntil) || 0),
         boosts: {
           doubleUntil: Math.max(0, Number(parsed.boosts && parsed.boosts.doubleUntil) || 0),
+          prismUntil: Math.max(0, Number(parsed.boosts && parsed.boosts.prismUntil) || 0),
           bonusAdsRemaining: Math.max(0, Math.min(99, Math.floor(Number(parsed.boosts && parsed.boosts.bonusAdsRemaining) || 0)))
         },
         unlocked: Array.isArray(parsed.unlocked) ? parsed.unlocked.filter(n => thresholds.some(t => t.id === n)) : [],
@@ -291,7 +294,7 @@
         const cooldown = Date.parse(result.ad_cooldown_until || "");
         if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
       } else {
-        if (rewardType === "passive" && state.boosts.doubleUntil > Date.now()) amount *= 2;
+        if (rewardType === "passive" && (state.boosts.doubleUntil > Date.now() || state.boosts.prismUntil > Date.now())) amount *= 2;
         if (rewardType === "ad" && state.boosts.bonusAdsRemaining > 0) {
           amount += AD_REWARD;
           state.boosts.bonusAdsRemaining -= 1;
@@ -318,6 +321,7 @@
       remoteBoards = { today: null, week: null, all: null };
       setLeaderboardMode(false);
       const oldTotal = state.totalEarned;
+      if (rewardType === "passive" && (state.boosts.doubleUntil > Date.now() || state.boosts.prismUntil > Date.now())) amount *= 2;
       state.balance += amount;
       state.totalEarned += amount;
       if (rewardType === "ad") {
@@ -411,6 +415,8 @@
     const balance = byId("shop-balance");
     if (!balance) return;
     balance.textContent = numberFormat.format(state.balance);
+    byId("shop-prism-balance").textContent = numberFormat.format(state.prismCoins || 0);
+    byId("prism-balance").textContent = numberFormat.format(state.prismCoins || 0);
     const localOnly = backendReady;
     byId("shop-mode").textContent = localOnly
       ? "SHOP PAUSED · SHARED SERVER BALANCE IS ENABLED"
@@ -422,9 +428,23 @@
         ? "Local-only boosts are paused while a shared server balance is enabled."
         : state.balance < cost ? "You need " + numberFormat.format(cost - state.balance) + " more Tokens." : "";
     });
+    document.querySelectorAll("[data-buy-prism]").forEach(button => {
+      const kind = button.dataset.buyPrism;
+      const cost = kind === "exchange" ? 400 : 0;
+      const shortPrism = kind === "shift" && (state.prismCoins || 0) < 1;
+      button.disabled = localOnly || (kind === "exchange" ? state.balance < cost : shortPrism);
+      button.title = localOnly
+        ? "Local currency exchanges are paused while a shared server balance is enabled."
+        : kind === "exchange" && state.balance < cost
+          ? "You need " + numberFormat.format(cost - state.balance) + " more Tokens."
+          : shortPrism ? "Exchange regular Tokens for a Prism Coin first." : "";
+    });
     const active = [];
     if (state.boosts.doubleUntil > Date.now()) {
       active.push("Double Shift: " + Math.ceil((state.boosts.doubleUntil - Date.now()) / 60000) + " min left");
+    }
+    if (state.boosts.prismUntil > Date.now()) {
+      active.push("Prism Shift: " + Math.ceil((state.boosts.prismUntil - Date.now()) / 60000) + " min left · 2× passive (doesn't stack)");
     }
     if (state.boosts.bonusAdsRemaining > 0) {
       active.push("Ad Bonus: " + state.boosts.bonusAdsRemaining + " ad" + (state.boosts.bonusAdsRemaining === 1 ? "" : "s") + " left");
@@ -483,6 +503,59 @@
       spawnParticles(button);
     }
     showToast(item.label + " purchased", item.message, "✦");
+  }
+
+
+  function buyPrism(kind) {
+    if (backendReady) {
+      showToast("Shop paused", "Prism exchanges use this browser's local balance, so they are paused while a shared server balance is enabled.", "◈");
+      return;
+    }
+    const button = document.querySelector('[data-buy-prism="' + kind + '"]');
+    if (kind === "exchange") {
+      const cost = 400;
+      if (state.balance < cost) {
+        showToast("Not enough Tokens", "You need " + numberFormat.format(cost - state.balance) + " more Tokens to exchange for a Prism Coin.", "◇");
+        return;
+      }
+      state.balance -= cost;
+      state.prismCoins = Math.max(0, Math.floor(Number(state.prismCoins) || 0)) + 1;
+      addActivity("Exchanged 400 Tokens for 1 Prism Coin.", "-400", "purchase");
+      saveState();
+      renderAll(true);
+      playRewardSound("milestone");
+      rewardHaptic(false);
+      if (button) {
+        button.classList.remove("purchase-flash");
+        void button.offsetWidth;
+        button.classList.add("purchase-flash");
+        window.setTimeout(() => button.classList.remove("purchase-flash"), 700);
+        spawnParticles(button);
+      }
+      showToast("Prism acquired", "400 Tokens became 1 Prism Coin. Shiny, mostly unnecessary, and yours.", "◈");
+      return;
+    }
+    if (kind === "shift") {
+      if ((state.prismCoins || 0) < 1) {
+        showToast("Need a Prism Coin", "Exchange 400 regular Tokens for a Prism Coin first.", "◈");
+        return;
+      }
+      state.prismCoins -= 1;
+      state.boosts.prismUntil = Math.max(Date.now(), Number(state.boosts.prismUntil) || 0) + 30 * 60 * 1000;
+      addActivity("Activated Prism Shift for 30 minutes.", "-1 PRISM", "purchase");
+      saveState();
+      renderAll(true);
+      playRewardSound("milestone");
+      rewardHaptic(true);
+      if (button) {
+        button.classList.remove("purchase-flash");
+        void button.offsetWidth;
+        button.classList.add("purchase-flash");
+        window.setTimeout(() => button.classList.remove("purchase-flash"), 700);
+        spawnParticles(button);
+      }
+      showToast("Prism Shift activated", "Passive rewards are now doubled for 30 minutes. It doesn't stack with Double Shift.", "✦");
+    }
   }
 
   function renderBalance(animate) {
@@ -1148,6 +1221,7 @@
     }));
     byId("leader-search").addEventListener("input", renderLeaderboard);
     document.querySelectorAll("[data-buy-boost]").forEach(button => button.addEventListener("click", () => buyBoost(button.dataset.buyBoost)));
+    document.querySelectorAll("[data-buy-prism]").forEach(button => button.addEventListener("click", () => buyPrism(button.dataset.buyPrism)));
     byId("username-form").addEventListener("submit", async event => {
       event.preventDefault();
       const nextName = sanitizeName(byId("username-input").value);
