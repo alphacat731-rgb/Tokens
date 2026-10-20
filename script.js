@@ -922,7 +922,7 @@
     saveState();
   }
 
-  function cancelAd() {  function cancelAd() {
+  function cancelAd() {
     adRunToken += 1;
     if (adTickHandle) window.clearInterval(adTickHandle);
     adTickHandle = null;
