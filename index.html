@@ -76,6 +76,19 @@
       </aside>
     </section>
 
+    <section class="studio-overview" aria-labelledby="studio-overview-title">
+      <div class="studio-overview-heading">
+        <div><div class="section-index">YOUR ACCOUNT</div><h2 id="studio-overview-title">At a glance</h2></div>
+        <p>Everything important, without digging through the page.</p>
+      </div>
+      <div class="studio-overview-grid">
+        <div class="studio-overview-stat"><span class="studio-stat-label">LIFETIME EARNED</span><strong id="overview-earned">0</strong><small>Tokens collected so far</small></div>
+        <div class="studio-overview-stat"><span class="studio-stat-label">ADS COMPLETED</span><strong id="overview-ads">0</strong><small>Eight seconds of nonsense each</small></div>
+        <div class="studio-overview-stat"><span class="studio-stat-label">PRISM COINS</span><strong class="overview-prism-value"><span class="prism-coin-mark" aria-hidden="true"></span><span id="overview-prism">0</span></strong><small>Exchange 400 Tokens for one</small></div>
+        <div class="studio-overview-stat"><span class="studio-stat-label">NEXT PAYOUT</span><strong id="overview-next">05:00</strong><small id="overview-next-note">+5 Tokens when the timer completes</small></div>
+      </div>
+    </section>
+
     <section class="earn-section section-space" id="earn" aria-labelledby="earn-title">
       <div class="section-heading">
         <div><div class="section-index">01 / THE BUSINESS MODEL</div><h2 id="earn-title">Doing nothing, <em>beautifully.</em></h2></div>
@@ -122,7 +135,7 @@
     <section class="shop-section section-space" id="shop" aria-labelledby="shop-title">
       <div class="section-heading">
         <div><div class="section-index">02 / SPEND A LITTLE NOTHING</div><h2 id="shop-title">Put your Tokens <em>to work.</em></h2></div>
-        <p class="section-aside">Useful boosts. No real money.<br>Finally, a reason to hoard these things.</p>
+        <p class="section-aside">Spend Tokens for short boosts.<br>Exchange into Prism for a longer one.</p>
       </div>
       <div class="shop-status-row">
         <div><span class="shop-status-dot" aria-hidden="true"></span><span id="shop-mode">LOCAL SHOP · PURCHASES SAVED ON THIS DEVICE</span></div>
@@ -132,6 +145,12 @@
         </div>
       </div>
       <div class="shop-grid">
+        <section class="shop-group" data-shop-group="boosts" aria-labelledby="boosts-group-title">
+          <div class="shop-group-heading">
+            <div><span class="shop-group-kicker">01 / REGULAR TOKENS</span><h3 id="boosts-group-title">Everyday boosts</h3><p>Small shortcuts for your next reward.</p></div>
+            <span class="shop-group-count">03 ITEMS</span>
+          </div>
+          <div class="shop-group-items">
         <article class="shop-item">
           <div class="shop-item-top"><span class="shop-item-icon boost-double" aria-hidden="true"><span class="material-symbols-rounded">bolt</span></span><span class="shop-item-tag">BEST FOR IDLING</span></div>
           <h3>Double Shift</h3><p class="shop-item-description">Double passive Token payouts for 15 minutes. Your doing-nothing efficiency has doubled.</p>
@@ -150,6 +169,14 @@
           <div class="shop-item-meta"><span>+60 SECONDS</span><strong>75 <small>TOKENS</small></strong></div>
           <button class="button button-dark button-full shop-buy" type="button" data-buy-boost="time">Buy Time Skip <span class="material-symbols-rounded button-icon" aria-hidden="true">arrow_forward</span></button>
         </article>
+          </div>
+        </section>
+        <section class="shop-group" data-shop-group="prism" aria-labelledby="prism-group-title">
+          <div class="shop-group-heading">
+            <div><span class="shop-group-kicker">02 / THE SECOND CURRENCY</span><h3 id="prism-group-title">The Prism economy</h3><p>Trade Tokens for Prism, then unlock a longer passive multiplier.</p></div>
+            <span class="shop-group-count">02 ITEMS</span>
+          </div>
+          <div class="shop-group-items">
         <article class="shop-item prism-shop-item">
           <div class="shop-item-top"><span class="shop-item-icon prism-item-icon" aria-hidden="true"><span class="prism-coin-mark"></span></span><span class="shop-item-tag">NEW CURRENCY</span></div>
           <h3>Prism Exchange</h3><p class="shop-item-description">Trade 400 regular Tokens for 1 Prism Coin. A shiny second currency with its own exclusive boost.</p>
@@ -162,9 +189,11 @@
           <div class="shop-item-meta"><span>30 MINUTES · 2×</span><strong>1 <small>PRISM</small></strong></div>
           <button class="button button-dark button-full shop-buy" type="button" data-buy-prism="shift">Activate Prism Shift <span class="material-symbols-rounded button-icon" aria-hidden="true">arrow_forward</span></button>
         </article>
+          </div>
+        </section>
       </div>
       <div class="active-boosts" id="active-boosts" aria-live="polite"><span class="active-boosts-label">ACTIVE BOOSTS</span><span id="active-boosts-copy">No boosts active. The grind remains unmodified.</span></div>
-      <p class="shop-footnote">Boosts and purchases are saved in this browser only. They do not transfer to another device. Local shop purchases are unavailable if a shared server balance is enabled.</p>
+      <p class="shop-footnote"><span class="material-symbols-rounded" aria-hidden="true">info</span> Boosts are applied when a reward is granted. Prism Shift doubles passive payouts for 30 minutes and does not stack with Double Shift. Purchases stay in this browser; the shop pauses if a shared server balance is active.</p>
     </section>
 
     <section class="leaderboard-section section-space" id="leaderboard" aria-labelledby="leaderboard-title">
@@ -184,7 +213,7 @@
         <div class="podium" id="podium" aria-label="Top three sample players"></div>
         <div class="leader-list-head"><span>RANK / PLAYER</span><span>TOKENS EARNED</span><span class="rank-change-label">VIBE CHECK</span></div>
         <div class="leader-list" id="leader-list" aria-live="polite"></div>
-        <div class="leaderboard-bottom"><span id="leaderboard-count">Showing sample players</span><span class="leaderboard-note">Fictional people. Impressive numbers. Entirely fake.</span></div>
+        <div class="leaderboard-bottom"><span id="leaderboard-count">Showing sample players</span><span class="leaderboard-note">Sample profiles only · not live visitors</span></div>
       </div>
       <p class="leaderboard-disclaimer" id="leaderboard-disclaimer">This is sample data for the demo. Your guest balance lives only in this browser and is not submitted to any global ranking.</p>
     </section>
