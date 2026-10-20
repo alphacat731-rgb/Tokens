@@ -129,6 +129,7 @@
     progressMs: 0,
     joinedAt: Date.now(),
     adCooldownUntil: 0,
+    boosts: { doubleUntil: 0, bonusAdsRemaining: 0 },
     unlocked: [],
     activity: [{ text: "Clocked in for a shift of doing nothing.", delta: "", time: Date.now(), kind: "welcome" }],
     updatedAt: Date.now()
@@ -172,6 +173,10 @@
         adsWatched: Math.max(0, Math.floor(Number(parsed.adsWatched) || 0)),
         progressMs: Math.max(0, Math.min(EARNING_INTERVAL - 1, Number(parsed.progressMs) || 0)),
         adCooldownUntil: Math.max(0, Number(parsed.adCooldownUntil) || 0),
+        boosts: {
+          doubleUntil: Math.max(0, Number(parsed.boosts && parsed.boosts.doubleUntil) || 0),
+          bonusAdsRemaining: Math.max(0, Math.min(99, Math.floor(Number(parsed.boosts && parsed.boosts.bonusAdsRemaining) || 0)))
+        },
         unlocked: Array.isArray(parsed.unlocked) ? parsed.unlocked.filter(n => thresholds.some(t => t.id === n)) : [],
         activity: Array.isArray(parsed.activity) ? parsed.activity.slice(0, 12) : [],
         joinedAt: Number(parsed.joinedAt) || Date.now()
@@ -286,6 +291,11 @@
         const cooldown = Date.parse(result.ad_cooldown_until || "");
         if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
       } else {
+        if (rewardType === "passive" && state.boosts.doubleUntil > Date.now()) amount *= 2;
+        if (rewardType === "ad" && state.boosts.bonusAdsRemaining > 0) {
+          amount += AD_REWARD;
+          state.boosts.bonusAdsRemaining -= 1;
+        }
         state.balance += amount;
         state.totalEarned += amount;
         if (rewardType === "ad") {
@@ -391,9 +401,78 @@
     renderProfile();
     renderActivity();
     renderAchievements();
+    renderShop();
     renderLeaderboard();
     renderCooldown();
     setStorageStatus();
+  }
+
+  function renderShop() {
+    const balance = byId("shop-balance");
+    if (!balance) return;
+    balance.textContent = numberFormat.format(state.balance);
+    const localOnly = backendReady;
+    byId("shop-mode").textContent = localOnly
+      ? "SHOP PAUSED · SHARED SERVER BALANCE IS ENABLED"
+      : "LOCAL SHOP · PURCHASES SAVED ON THIS DEVICE";
+    document.querySelectorAll("[data-buy-boost]").forEach(button => {
+      const cost = { double: 250, ad: 180, time: 75 }[button.dataset.buyBoost];
+      button.disabled = localOnly || state.balance < cost;
+      button.title = localOnly
+        ? "Local-only boosts are paused while a shared server balance is enabled."
+        : state.balance < cost ? "You need " + numberFormat.format(cost - state.balance) + " more Tokens." : "";
+    });
+    const active = [];
+    if (state.boosts.doubleUntil > Date.now()) {
+      active.push("Double Shift: " + Math.ceil((state.boosts.doubleUntil - Date.now()) / 60000) + " min left");
+    }
+    if (state.boosts.bonusAdsRemaining > 0) {
+      active.push("Ad Bonus: " + state.boosts.bonusAdsRemaining + " ad" + (state.boosts.bonusAdsRemaining === 1 ? "" : "s") + " left");
+    }
+    byId("active-boosts-copy").textContent = active.length
+      ? active.join(" · ") + " · Time Skip is a one-time timer bump."
+      : "No boosts active. The grind remains unmodified.";
+    byId("active-boosts").classList.toggle("has-active-boosts", active.length > 0);
+  }
+
+  function buyBoost(kind) {
+    if (backendReady) {
+      showToast("Shop paused", "This shop spends local Tokens only, so it is paused when a shared server balance is active.", "◷");
+      return;
+    }
+    const items = {
+      double: { cost: 250, label: "Double Shift", message: "Passive payouts are doubled for 15 minutes." },
+      ad: { cost: 180, label: "Ad Bonus Pack", message: "Your next three completed fake ads earn +15 extra Tokens each." },
+      time: { cost: 75, label: "Time Skip", message: "Your passive timer moved forward by one minute." }
+    };
+    const item = items[kind];
+    if (!item) return;
+    if (state.balance < item.cost) {
+      showToast("Not enough Tokens", "You need " + numberFormat.format(item.cost - state.balance) + " more Tokens for " + item.label + ".", "◇");
+      return;
+    }
+    state.balance -= item.cost;
+    if (kind === "double") {
+      state.boosts.doubleUntil = Math.max(Date.now(), state.boosts.doubleUntil || 0) + 15 * 60 * 1000;
+    } else if (kind === "ad") {
+      state.boosts.bonusAdsRemaining = Math.min(99, (state.boosts.bonusAdsRemaining || 0) + 3);
+    } else if (kind === "time") {
+      state.progressMs = Math.min(EARNING_INTERVAL - 1, state.progressMs + 60 * 1000);
+    }
+    addActivity("Bought " + item.label + ".", "-" + numberFormat.format(item.cost), "purchase");
+    saveState();
+    renderAll(true);
+    playRewardSound("milestone");
+    rewardHaptic(false);
+    const button = document.querySelector('[data-buy-boost="' + kind + '"]');
+    if (button) {
+      button.classList.remove("purchase-flash");
+      void button.offsetWidth;
+      button.classList.add("purchase-flash");
+      window.setTimeout(() => button.classList.remove("purchase-flash"), 700);
+      spawnParticles(button);
+    }
+    showToast(item.label + " purchased", item.message, "✦");
   }
 
   function renderBalance(animate) {
@@ -1058,6 +1137,7 @@
       if (backendReady) void refreshRemoteLeaderboard();
     }));
     byId("leader-search").addEventListener("input", renderLeaderboard);
+    document.querySelectorAll("[data-buy-boost]").forEach(button => button.addEventListener("click", () => buyBoost(button.dataset.buyBoost)));
     byId("username-form").addEventListener("submit", async event => {
       event.preventDefault();
       const nextName = sanitizeName(byId("username-input").value);
@@ -1175,6 +1255,7 @@
       renderTimer();
       renderActivity();
       renderCooldown();
+      renderShop();
     }, 1000);
   }
 
