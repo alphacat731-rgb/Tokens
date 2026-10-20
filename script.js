@@ -457,7 +457,17 @@
     } else if (kind === "ad") {
       state.boosts.bonusAdsRemaining = Math.min(99, (state.boosts.bonusAdsRemaining || 0) + 3);
     } else if (kind === "time") {
-      state.progressMs = Math.min(EARNING_INTERVAL - 1, state.progressMs + 60 * 1000);
+      state.progressMs += 60 * 1000;
+      if (state.progressMs >= EARNING_INTERVAL) {
+        state.progressMs -= EARNING_INTERVAL;
+        window.setTimeout(() => {
+          if (!passiveClaimInFlight) {
+            passiveClaimInFlight = true;
+            void awardTokens(EARNING_REWARD, "A Time Skip paid off early.", "passive")
+              .finally(() => { passiveClaimInFlight = false; });
+          }
+        }, 0);
+      }
     }
     addActivity("Bought " + item.label + ".", "-" + numberFormat.format(item.cost), "purchase");
     saveState();
