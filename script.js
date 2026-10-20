@@ -143,6 +143,7 @@
   let pulseHandle = null;
   let uiHandle = null;
   let activePeriod = "today";
+  let uiMode = "studio";
   let displayedBalance = 0;
   let balanceAnimation = null;
   let adTickHandle = null;
@@ -1191,7 +1192,33 @@
     renderCooldown();
   }
 
+
+  function setUiMode(mode, persist) {
+    uiMode = mode === "classic" ? "classic" : "studio";
+    document.body.classList.toggle("studio-ui", uiMode === "studio");
+    document.body.classList.toggle("classic-ui", uiMode === "classic");
+    const button = byId("ui-mode-toggle");
+    const label = byId("ui-mode-label");
+    if (label) label.textContent = uiMode === "studio" ? "Studio" : "Classic";
+    if (button) {
+      const target = uiMode === "studio" ? "Classic" : "Studio";
+      button.setAttribute("aria-label", "Switch to " + target + " interface");
+      button.setAttribute("aria-pressed", String(uiMode === "studio"));
+      button.title = uiMode + " interface selected. Click to switch to " + target + ".";
+      const icon = button.querySelector(".ui-mode-symbol");
+      if (icon) icon.textContent = uiMode === "studio" ? "view_quilt" : "dashboard";
+    }
+    if (persist) {
+      try { localStorage.setItem("token-ui-mode", uiMode); } catch (error) {}
+    }
+  }
+
   function bindEvents() {
+    byId("ui-mode-toggle").addEventListener("click", () => {
+      setUiMode(uiMode === "studio" ? "classic" : "studio", true);
+      showToast(uiMode === "studio" ? "Studio interface" : "Classic interface",
+        uiMode === "studio" ? "The cleaner, more focused layout is on." : "The original TOKEN layout is back.", "↔");
+    });
     document.querySelectorAll("[data-open-profile]").forEach(button => button.addEventListener("click", () => openDialog(byId("profile-dialog"))));
     document.querySelectorAll("[data-open-settings]").forEach(button => button.addEventListener("click", () => {
       if (byId("profile-dialog").open) closeDialog(byId("profile-dialog"));
@@ -1345,6 +1372,9 @@
 
   function boot() {
     state = safeReadState();
+    let savedUiMode = "studio";
+    try { savedUiMode = localStorage.getItem("token-ui-mode") || "studio"; } catch (error) {}
+    setUiMode(savedUiMode, false);
     if (!state.activity.length) addActivity("Clocked in for a shift of doing nothing.", "", "welcome");
     displayedBalance = state.balance;
     byId("year").textContent = String(new Date().getFullYear());
