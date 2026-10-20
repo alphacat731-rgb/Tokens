@@ -123,3 +123,95 @@
 .prism-shop-item .shop-buy:hover{background:#5f4e30}
 @media(max-width:850px){.shop-balances{gap:12px}.shop-prism-wallet{padding-left:12px}}
 @media(max-width:560px){.shop-balances{width:100%;justify-content:space-between}.shop-prism-wallet{padding-left:10px}.wallet-currency-note{margin-left:auto}.wallet-currency-strip{width:100%}.nav-icon{font-size:16px;margin-right:3px}}
+
+
+/* UI mode control is shared between Classic and Studio. */
+.ui-mode-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:6px 9px;border:1px solid var(--line-dark);border-radius:7px;background:transparent;color:#5d6058;cursor:pointer;white-space:nowrap;transition:background .18s,border-color .18s,color .18s}
+.ui-mode-button:hover{background:#fff;border-color:#c6b58e;color:var(--ink)}
+.ui-mode-button:focus-visible{outline:3px solid rgba(179,138,69,.38);outline-offset:2px}
+.ui-mode-symbol{font-size:17px!important}
+.ui-mode-label{font-size:10px;font-weight:760;letter-spacing:.01em}
+.classic-ui .ui-mode-button{background:#fff}
+
+/* STUDIO: an editorial, quieter interface. Classic removes this class and restores the original styling. */
+body.studio-ui{--paper:#f8f7f2;--white:#fff;--ink:#252720;--muted:#73766e;--line:#deded5;--line-dark:#cfcec3;--gold:#a88649;--gold-deep:#826633;--gold-soft:#eee5d2;--shadow:none;--radius:8px;--radius-sm:5px}
+body.studio-ui .site-header{background:var(--paper);backdrop-filter:none;border-bottom:1px solid #deded6}
+body.studio-ui .nav{height:72px}
+body.studio-ui .brand{letter-spacing:.105em;font-size:19px}
+body.studio-ui .brand img{width:32px;height:32px}
+body.studio-ui .nav-link{font-size:12px;font-weight:600;color:#72756c}
+body.studio-ui .nav-link:after{height:1px}
+body.studio-ui .eyebrow{padding:0;background:transparent;border-radius:0;color:#6b6e65;letter-spacing:.11em}
+body.studio-ui .eyebrow-dot{box-shadow:none;width:5px;height:5px}
+body.studio-ui h1{font-size:clamp(40px,4.15vw,57px);letter-spacing:-.055em;font-weight:700;margin-top:22px}
+body.studio-ui h1 span{font-family:inherit;font-style:normal;letter-spacing:inherit;color:#8b7549;font-weight:620}
+body.studio-ui .hero{gap:clamp(32px,6vw,72px);padding:58px 0 48px;border-bottom:1px solid var(--line)}
+body.studio-ui .hero-description{max-width:410px;color:#65685f;font-size:14px;line-height:1.75}
+body.studio-ui .hero-footnote{margin-top:20px;color:#888b82}
+body.studio-ui .button{border-radius:5px;box-shadow:none;letter-spacing:0;transition:background .16s,border-color .16s,color .16s,transform .16s}
+body.studio-ui .button-dark{background:#282a24;box-shadow:none}
+body.studio-ui .button-dark:hover:not(:disabled){background:#42453b;box-shadow:none}
+body.studio-ui .wallet-card{background:#262822;color:#f5f3ec;border:0;border-radius:8px;padding:25px 25px 21px;box-shadow:none;animation:none}
+body.studio-ui .wallet-card .micro-label{color:#babbb1}
+body.studio-ui .wallet-card .live-indicator{border-radius:4px;background:#374234;color:#d6e0d1;padding:5px 7px}
+body.studio-ui .wallet-card .wallet-balance{color:#faf8f1;font-weight:680;letter-spacing:-.06em}
+body.studio-ui .wallet-card .token-wordmark{color:#c4c4b9}
+body.studio-ui .wallet-card .token-wordmark img{filter:brightness(0) invert(1);animation:none}
+body.studio-ui .wallet-card .wallet-divider{background:rgba(255,255,255,.13)}
+body.studio-ui .wallet-card .wallet-progress-head{color:#c2c3b9}
+body.studio-ui .wallet-card .wallet-progress-head strong{color:#f5f3ec}
+body.studio-ui .wallet-card .progress-track{background:rgba(255,255,255,.14);height:5px}
+body.studio-ui .wallet-card .progress-track span{background:#c6a66a}
+body.studio-ui .wallet-card .wallet-foot{color:#aeb0a5}
+body.studio-ui .wallet-card .wallet-currency-strip{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.12);color:#d7c39b}
+body.studio-ui .wallet-card .wallet-currency-copy strong{color:#fff}
+body.studio-ui .wallet-card .wallet-currency-note{color:#b7b09d}
+body.studio-ui .wallet-card .prism-coin-mark{background-color:#d4b779}
+body.studio-ui .wallet-watermark{opacity:.07;filter:brightness(0) invert(1)}
+body.studio-ui .section-space{margin-top:64px}
+body.studio-ui .section-heading{margin-bottom:25px;gap:30px;align-items:flex-end}
+body.studio-ui .section-index{color:#777a70;letter-spacing:.12em;font-size:9px}
+body.studio-ui .section-heading h2,body.studio-ui .insights-title-row h2,body.studio-ui .about-strip h2,body.studio-ui .dialog-top h2{letter-spacing:-.035em;font-weight:680}
+body.studio-ui .section-heading h2 em,body.studio-ui .insights-title-row h2 em,body.studio-ui .about-strip h2 em,body.studio-ui .dialog-top h2 em{font-family:inherit;font-style:normal;font-weight:650;color:#8b7549}
+body.studio-ui .earn-grid{gap:18px}
+body.studio-ui .earn-card,body.studio-ui .ad-card,body.studio-ui .activity-card,body.studio-ui .achievements-card,body.studio-ui .leaderboard-panel{border-radius:8px;box-shadow:none}
+body.studio-ui .timer-card{background:#fff;border:1px solid #deded6}
+body.studio-ui .card-overline{letter-spacing:.11em}
+body.studio-ui .timer-dial{filter:none}
+body.studio-ui .timer-copy h3{font-size:20px;font-weight:680;letter-spacing:-.025em}
+body.studio-ui .ad-card{border:1px solid #deded6}
+body.studio-ui .shop-status-row{border-radius:6px;box-shadow:none;border-color:#deded6}
+body.studio-ui .shop-grid{gap:0 26px}
+body.studio-ui .shop-item{display:flex;flex-direction:column;align-items:stretch;min-width:0;padding:20px 0 18px;background:transparent;border:0;border-top:1px solid #d9d9d0;border-radius:0;box-shadow:none;transition:border-color .18s}
+body.studio-ui .shop-item:hover{transform:none;box-shadow:none;border-color:#a88a52}
+body.studio-ui .shop-item-top{margin-bottom:16px}
+body.studio-ui .shop-item-icon{border-radius:7px}
+body.studio-ui .shop-item h3{font-size:18px;font-weight:680;letter-spacing:-.025em}
+body.studio-ui .shop-item-description{font-size:12px;line-height:1.7;color:#66695f;min-height:61px}
+body.studio-ui .shop-item-meta{margin-top:auto;border-color:#e7e6de}
+body.studio-ui .shop-item-tag{letter-spacing:.085em}
+body.studio-ui .prism-shop-item{background:transparent;border-color:#a98b54}
+body.studio-ui .prism-shop-item .shop-buy{background:#74613e;border-color:#74613e}
+body.studio-ui .prism-shop-item .shop-buy:hover:not(:disabled){background:#5e4e31}
+body.studio-ui .active-boosts{border-radius:6px;box-shadow:none}
+body.studio-ui .leaderboard-panel{border:1px solid #deded6;background:#fff}
+body.studio-ui .podium-card{border-radius:5px;box-shadow:none}
+body.studio-ui .leader-row{transition:background .16s}
+body.studio-ui .leader-row:hover{background:#f7f6f0}
+body.studio-ui .activity-card,body.studio-ui .achievements-card{background:#fff;border:1px solid #deded6;border-radius:8px}
+body.studio-ui .achievement{border-radius:6px;background:#fafaf7}
+body.studio-ui .achievement:hover{transform:none}
+body.studio-ui .achievement.unlocked{background:#f7f0e1}
+body.studio-ui .about-strip{border-radius:8px;background:#efeee7;box-shadow:none}
+body.studio-ui .dialog-top h2{font-weight:680}
+body.studio-ui .app-dialog{border-radius:8px;box-shadow:0 20px 70px rgba(26,27,22,.16)}
+body.studio-ui input,body.studio-ui .search-field{border-radius:5px}
+body.studio-ui .toast{border-radius:6px;box-shadow:0 10px 32px rgba(20,20,16,.13)}
+body.studio-ui .demo-stamp,body.studio-ui .live-indicator{border-radius:4px}
+body.studio-ui .site-footer{border-top-color:#deded6}
+body.studio-ui .shop-buy.purchase-flash{animation:studio-purchase-feedback .5s ease-out}
+@keyframes studio-purchase-feedback{0%{outline:0 solid rgba(168,138,75,0)}45%{outline:3px solid rgba(168,138,75,.3)}100%{outline:0 solid rgba(168,138,75,0)}}
+@media(max-width:980px){body.studio-ui .hero{padding-top:48px;gap:28px}body.studio-ui .shop-grid{gap:0 20px}}
+@media(max-width:720px){body.studio-ui .nav{gap:8px}body.studio-ui .nav-links{gap:10px}body.studio-ui .nav-link{font-size:10px}body.studio-ui .ui-mode-button{gap:3px;padding:5px 6px;min-height:30px}body.studio-ui .ui-mode-label{font-size:9px}body.studio-ui .settings-button{display:none}}
+@media(max-width:420px){.ui-mode-button{padding:4px 5px;gap:2px}.ui-mode-label{display:none}.ui-mode-symbol{font-size:18px!important}.studio-ui .nav-links{gap:7px}.studio-ui .nav-link{font-size:9px}.studio-ui .nav-icon{display:none}.studio-ui .brand{font-size:15px;gap:4px}.studio-ui .brand img{width:27px;height:27px}.studio-ui .profile-pill-name{max-width:39px}}
+@media(prefers-reduced-motion:reduce){body.studio-ui .shop-buy.purchase-flash{animation:none}}
