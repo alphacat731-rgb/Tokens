@@ -12,6 +12,7 @@
   <link rel="icon" type="image/png" href="assets/token-cube-dark.png">
   <link rel="apple-touch-icon" href="assets/token-cube-dark.png">
   <link rel="stylesheet" href="styles.css">
+  <script src="supabase-config.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -112,7 +113,7 @@
     <section class="leaderboard-section section-space" id="leaderboard" aria-labelledby="leaderboard-title">
       <div class="section-heading leaderboard-heading">
         <div><div class="section-index">02 / THE TOTALLY SERIOUS RANKINGS</div><h2 id="leaderboard-title">A small hall of <em>pointlessness.</em></h2></div>
-        <span class="demo-stamp"><span class="demo-stamp-dot"></span> DEMO LEADERBOARD</span>
+        <span class="demo-stamp"><span class="demo-stamp-dot"></span> <span id="leaderboard-mode-label">DEMO LEADERBOARD</span></span>
       </div>
       <div class="leaderboard-panel">
         <div class="leaderboard-toolbar">
@@ -128,7 +129,7 @@
         <div class="leader-list" id="leader-list" aria-live="polite"></div>
         <div class="leaderboard-bottom"><span id="leaderboard-count">Showing sample players</span><span class="leaderboard-note">Fictional people. Impressive numbers. Entirely fake.</span></div>
       </div>
-      <p class="leaderboard-disclaimer">This is sample data for the demo. Your guest balance lives only in this browser and is not submitted to any global ranking.</p>
+      <p class="leaderboard-disclaimer" id="leaderboard-disclaimer">This is sample data for the demo. Your guest balance lives only in this browser and is not submitted to any global ranking.</p>
     </section>
 
     <section class="insights-grid section-space">
@@ -156,6 +157,13 @@
 
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
   <div class="particle-layer" id="particle-layer" aria-hidden="true"></div>
+  <div class="reward-stage" id="reward-stage" aria-hidden="true">
+    <span class="reward-stage-ring"></span><span class="reward-stage-ring reward-stage-ring-two"></span>
+    <span class="reward-stage-spark spark-one">✦</span><span class="reward-stage-spark spark-two">✧</span><span class="reward-stage-spark spark-three">✦</span><span class="reward-stage-spark spark-four">✧</span>
+    <img class="reward-stage-cube" src="assets/token-cube.png" alt="">
+    <strong class="reward-stage-amount" id="reward-stage-amount">+5</strong>
+    <span class="reward-stage-label" id="reward-stage-label">TOKENS EARNED</span>
+  </div>
 
   <dialog class="app-dialog profile-dialog" id="profile-dialog" aria-labelledby="profile-title">
     <div class="dialog-top"><div><div class="section-index">YOUR PERSONAL NOTHING</div><h2 id="profile-title">Guest <em>profile.</em></h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close profile">×</button></div>
@@ -174,7 +182,7 @@
     <div class="dialog-top"><div><div class="section-index">TWEAK THE VOID</div><h2 id="settings-title">Settings<span>.</span></h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close settings">×</button></div>
     <div class="settings-row"><div><strong>Animations</strong><p>Keep the cube bobbing and the numbers feeling fancy.</p></div><label class="switch"><input id="motion-toggle" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Enable animations</span></label></div>
     <div class="settings-row"><div><strong>Local storage</strong><p>Your balance is saved in this browser, not online.</p></div><span class="storage-status" id="storage-status">Checking…</span></div>
-    <div class="settings-row"><div><strong>Reset everything</strong><p>Delete your balance, timer, name, and guest activity from this device.</p></div><button class="button button-danger-outline" type="button" id="open-reset">Reset</button></div>
+    <div class="settings-row"><div><strong>Reset this device</strong><p>Clear this browser’s guest progress. A connected global leaderboard may retain your published score.</p></div><button class="button button-danger-outline" type="button" id="open-reset">Reset</button></div>
     <div class="settings-note"><span aria-hidden="true">ⓘ</span> TOKEN is a harmless local demo. Client-side balances can be edited by the device owner and are not cheat-proof.</div>
   </dialog>
 

@@ -47,3 +47,21 @@ Client-side balances can be changed by the device owner. This project is a playf
 ## Privacy
 
 No ad network, analytics script, external font, tracking pixel, or remote database is used. Guest data stays in browser local storage.
+
+
+## Enable the real global leaderboard (Supabase)
+
+The site now includes a Supabase-backed global leaderboard integration. It intentionally shows **DEMO LEADERBOARD** until a real project is configured; it never labels sample entries as live.
+
+1. Create or open a Supabase project at https://supabase.com/.
+2. In Supabase **SQL Editor**, run the complete contents of `supabase/schema.sql`.
+3. In **Authentication → Sign In / Providers**, enable **Anonymous Sign-Ins** for guest identities.
+4. In **Project Settings → API**, copy the Project URL and the public anon/publishable key. Never use a `service_role` or secret key in a static website.
+5. Put those two public values in `supabase-config.js` (`url` and `anonKey`).
+6. Commit and push the configuration change to `main`, then open the site. The label switches to **LIVE GLOBAL LEADERBOARD** when anonymous sign-in and the RPC/database setup succeed.
+
+Supabase's public anon key is meant for browser use only when paired with Row Level Security and safe database functions. The SQL enables RLS, removes direct table access from browser roles, and grants access through narrow functions. Reward increments are committed in the database and leaderboard totals are calculated from reward events, so visitors share the same Today / This Week / All Time ranking.
+
+This remains a casual, no-value game: a static client can still be inspected or automated, and anonymous identities are not strong proof of a unique human. Do not use the board for anything valuable or safety-critical. If the shared service is unreachable, the page falls back to local-only rewards and clearly returns to demo mode.
+
+The Supabase browser client is loaded only when both configuration values are present. No service secret is required, and no paid tier is required by this code itself.

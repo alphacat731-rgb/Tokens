@@ -8,9 +8,9 @@
   const AD_REWARD = 15;
   const AD_DURATION = 8000;
   const AD_COOLDOWN = 30000;
-  const LOCK_TTL = 75000;
+  const LOCK_TTL = 90000;
   const HEARTBEAT_EVERY = 1000;
-  const MAX_COUNTED_GAP = 65000;
+  const MAX_COUNTED_GAP = 75000;
   const numberFormat = new Intl.NumberFormat("en-US");
   const thresholds = [
     { id: 100, label: "First century", note: "100 Tokens", icon: "✦" },
@@ -101,6 +101,13 @@
   let adFinished = false;
   let adRunToken = 0;
   let toastHandle = null;
+  let supabaseClient = null;
+  let backendReady = false;
+  let remoteBoards = { today: null, week: null, all: null };
+  let remoteRefreshInFlight = false;
+  let awardInFlight = false;
+  let passiveClaimInFlight = false;
+  let liveModeErrorShown = false;
 
   function safeReadState() {
     try {
@@ -198,15 +205,99 @@
     });
   }
 
-  function awardTokens(amount, reason) {
-    const oldTotal = state.totalEarned;
-    state.balance += amount;
-    state.totalEarned += amount;
-    addActivity(reason, "+" + numberFormat.format(amount), "reward");
-    checkMilestones(oldTotal);
-    saveState();
-    renderAll(true);
-    spawnParticles();
+  async function awardTokens(amount, reason, rewardType) {
+    if (awardInFlight) return false;
+    awardInFlight = true;
+    try {
+      const oldTotal = state.totalEarned;
+      if (backendReady) {
+        const rpcName = rewardType === "ad" ? "token_claim_ad" : "token_claim_passive";
+        const { data, error } = await supabaseClient.rpc(rpcName);
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        if (!result || result.granted !== true) {
+          if (result) {
+            state.balance = Math.max(0, Number(result.balance) || 0);
+            state.totalEarned = Math.max(0, Number(result.all_time_tokens) || 0);
+            state.adsWatched = Math.max(0, Number(result.ads_watched) || 0);
+            const cooldown = Date.parse(result.ad_cooldown_until || "");
+            if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
+          }
+          saveState();
+          renderAll(true);
+          showToast("Not quite yet", "The shared server is keeping rewards properly spaced.", "◷");
+          return false;
+        }
+        state.balance = Math.max(0, Number(result.balance) || 0);
+        state.totalEarned = Math.max(0, Number(result.all_time_tokens) || 0);
+        state.adsWatched = Math.max(0, Number(result.ads_watched) || 0);
+        const cooldown = Date.parse(result.ad_cooldown_until || "");
+        if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
+      } else {
+        state.balance += amount;
+        state.totalEarned += amount;
+        if (rewardType === "ad") state.adsWatched += 1;
+      }
+      addActivity(reason, "+" + numberFormat.format(amount), "reward");
+      checkMilestones(oldTotal);
+      saveState();
+      renderAll(true);
+      spawnParticles();
+      showRewardMoment(amount, state.totalEarned > oldTotal && thresholds.some(item => oldTotal < item.id && state.totalEarned >= item.id));
+      if (backendReady) void refreshRemoteLeaderboard();
+      return true;
+    } catch (error) {
+      console.warn("TOKEN shared reward failed; continuing in local mode.", error);
+      backendReady = false;
+      remoteBoards = { today: null, week: null, all: null };
+      setLeaderboardMode(false);
+      const oldTotal = state.totalEarned;
+      state.balance += amount;
+      state.totalEarned += amount;
+      if (rewardType === "ad") state.adsWatched += 1;
+      addActivity(reason, "+" + numberFormat.format(amount), "reward");
+      checkMilestones(oldTotal);
+      saveState();
+      renderAll(true);
+      spawnParticles();
+      showRewardMoment(amount, thresholds.some(item => oldTotal < item.id && state.totalEarned >= item.id));
+      if (!liveModeErrorShown) {
+        showToast("Global board offline", "This reward is saved locally for now; shared rankings need a connection.", "!");
+        liveModeErrorShown = true;
+      }
+      return true;
+    } finally {
+      awardInFlight = false;
+    }
+  }
+
+  function showRewardMoment(amount, milestone) {
+    const stage = byId("reward-stage");
+    byId("reward-stage-amount").textContent = "+" + numberFormat.format(amount);
+    byId("reward-stage-label").textContent = milestone ? "MILESTONE UNLOCKED" : "TOKENS EARNED";
+    stage.classList.remove("is-visible");
+    byId("balance").classList.remove("balance-pop");
+    byId("wallet-card");
+    void stage.offsetWidth;
+    stage.classList.add("is-visible");
+    byId("balance").classList.add("balance-pop");
+    byId("wallet-card")?.classList.add("is-rewarding");
+    const count = milestone ? 18 : 10;
+    for (let i = 0; i < count; i++) {
+      const spark = document.createElement("span");
+      spark.className = "reward-spark-particle";
+      spark.textContent = i % 3 === 0 ? "✦" : (i % 2 ? "·" : "✧");
+      spark.style.setProperty("--angle", (360 / count * i + Math.random() * 12) + "deg");
+      spark.style.setProperty("--distance", (milestone ? 74 : 54) + Math.random() * (milestone ? 56 : 38) + "px");
+      spark.style.animationDelay = Math.floor(Math.random() * 100) + "ms";
+      stage.append(spark);
+      window.setTimeout(() => spark.remove(), 1050);
+    }
+    window.setTimeout(() => {
+      stage.classList.remove("is-visible");
+      byId("balance").classList.remove("balance-pop");
+      byId("wallet-card")?.classList.remove("is-rewarding");
+    }, milestone ? 1900 : 1450);
   }
 
   function renderAll(allowBalanceAnimation) {
@@ -380,7 +471,159 @@
     });
   }
 
+  function setLeaderboardMode(isLive) {
+    const label = byId("leaderboard-mode-label");
+    const stamp = document.querySelector(".demo-stamp");
+    const note = byId("leaderboard-disclaimer");
+    if (label) label.textContent = isLive ? "LIVE GLOBAL LEADERBOARD" : "DEMO LEADERBOARD";
+    if (stamp) stamp.classList.toggle("is-live", !!isLive);
+    if (note) note.textContent = isLive
+      ? "Live shared rankings from connected TOKEN guests. Scores sync through Supabase; this is a casual leaderboard, not an anti-cheat system."
+      : "This is sample data for the demo. Your guest balance stays in this browser and is not submitted to a global ranking.";
+  }
+
+  function loadSupabaseSdk() {
+    if (window.supabase && typeof window.supabase.createClient === "function") return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-token-supabase-sdk="true"]');
+      if (existing) {
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", () => reject(new Error("Supabase SDK could not be loaded.")), { once: true });
+        return;
+      }
+      const sdk = document.createElement("script");
+      sdk.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+      sdk.async = true;
+      sdk.dataset.tokenSupabaseSdk = "true";
+      sdk.onload = resolve;
+      sdk.onerror = () => reject(new Error("Supabase SDK could not be loaded."));
+      document.head.append(sdk);
+    });
+  }
+
+  function firstRow(data) {
+    return Array.isArray(data) ? (data[0] || null) : data;
+  }
+
+  async function initializeRemoteBackend() {
+    const config = window.TOKEN_SUPABASE_CONFIG || {};
+    const url = String(config.url || "").trim();
+    const anonKey = String(config.anonKey || "").trim();
+    if (!url.startsWith("https://") || !anonKey || /YOUR_|PASTE_|CHANGE_ME/i.test(url + anonKey)) {
+      setLeaderboardMode(false);
+      return;
+    }
+    try {
+      await loadSupabaseSdk();
+      if (!window.supabase || typeof window.supabase.createClient !== "function") throw new Error("Supabase client is unavailable.");
+      supabaseClient = window.supabase.createClient(url, anonKey, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+      });
+      let { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData || !sessionData.session) {
+        const signIn = await supabaseClient.auth.signInAnonymously();
+        if (signIn.error) throw signIn.error;
+        sessionData = { session: signIn.data.session };
+      }
+      if (!sessionData || !sessionData.session) throw new Error("Anonymous guest sign-in did not return a session.");
+      const { data, error } = await supabaseClient.rpc("token_ensure_player", { p_username: state.username });
+      if (error) throw error;
+      const profile = firstRow(data);
+      if (!profile) throw new Error("Supabase did not return a guest profile.");
+      state.username = sanitizeName(profile.username || state.username) || state.username;
+      state.balance = Math.max(0, Number(profile.balance) || 0);
+      state.totalEarned = Math.max(0, Number(profile.all_time_tokens) || 0);
+      state.adsWatched = Math.max(0, Number(profile.ads_watched) || 0);
+      const cooldown = Date.parse(profile.ad_cooldown_until || "");
+      if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
+      backendReady = true;
+      saveState();
+      setLeaderboardMode(true);
+      renderAll(false);
+      await refreshRemoteLeaderboard();
+      window.setInterval(() => { if (backendReady) void refreshRemoteLeaderboard(); }, 25000);
+    } catch (error) {
+      backendReady = false;
+      remoteBoards = { today: null, week: null, all: null };
+      setLeaderboardMode(false);
+      console.warn("TOKEN global leaderboard is not configured or reachable.", error);
+      showToast("Still in demo mode", "Connect the Supabase project to turn on shared rankings.", "◇");
+    }
+  }
+
+  async function refreshRemoteLeaderboard() {
+    if (!backendReady || !supabaseClient || remoteRefreshInFlight) return;
+    remoteRefreshInFlight = true;
+    try {
+      const periods = ["today", "week", "all"];
+      const responses = await Promise.all(periods.map(period =>
+        supabaseClient.rpc("token_leaderboard", { p_period: period, p_limit: 100 })
+      ));
+      for (let i = 0; i < periods.length; i++) {
+        const response = responses[i];
+        if (response.error) throw response.error;
+        remoteBoards[periods[i]] = (response.data || []).map(row => ({
+          name: String(row.username || "Guest").slice(0, 18),
+          score: Math.max(0, Number(row.tokens) || 0),
+          rank: Math.max(1, Number(row.rank_no) || 1),
+          isYou: row.is_you === true,
+          avatar: String(row.username || "G").charAt(0).toUpperCase(),
+          vibe: row.is_you ? "YOU" : "—",
+          shift: "steady"
+        }));
+      }
+      setLeaderboardMode(true);
+      renderLeaderboard();
+    } catch (error) {
+      console.warn("Could not refresh shared TOKEN rankings.", error);
+      backendReady = false;
+      remoteBoards = { today: null, week: null, all: null };
+      setLeaderboardMode(false);
+      renderLeaderboard();
+      if (!liveModeErrorShown) {
+        showToast("Global board disconnected", "The sample leaderboard is shown until the shared database reconnects.", "!");
+        liveModeErrorShown = true;
+      }
+    } finally {
+      remoteRefreshInFlight = false;
+    }
+  }
+
+  async function startRemoteAd() {
+    if (!backendReady) return true;
+    try {
+      const { data, error } = await supabaseClient.rpc("token_start_ad");
+      if (error) throw error;
+      const result = firstRow(data);
+      if (!result || result.started !== true) {
+        if (result && result.ad_cooldown_until) {
+          const cooldown = Date.parse(result.ad_cooldown_until);
+          if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
+        }
+        renderCooldown();
+        showToast("Ad not ready yet", "The server is keeping the bonus on cooldown.", "◷");
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("Could not start a shared fake ad.", error);
+      backendReady = false;
+      remoteBoards = { today: null, week: null, all: null };
+      setLeaderboardMode(false);
+      return true;
+    }
+  }
+
+  function cancelRemoteAd() {
+    if (!backendReady || !supabaseClient) return;
+    void supabaseClient.rpc("token_cancel_ad").then(({ error }) => {
+      if (error) console.warn("Could not cancel remote ad state.", error);
+    }).catch(error => console.warn("Could not cancel remote ad state.", error));
+  }
+
   function getRanked(period) {
+    if (backendReady && Array.isArray(remoteBoards[period])) return remoteBoards[period];
     const base = boards[period].map(item => ({ ...item, isYou: false }));
     const you = { name: state.username, score: state.balance, vibe: "YOU", shift: "steady", avatar: state.username.charAt(0).toUpperCase() || "G", isYou: true };
     const list = base.concat(you).sort((a, b) => b.score - a.score || (a.isYou ? 1 : -1));
@@ -388,6 +631,16 @@
   }
 
   function renderLeaderboard() {
+    if (backendReady && !Array.isArray(remoteBoards[activePeriod])) {
+      byId("podium").replaceChildren();
+      const loading = document.createElement("div");
+      loading.className = "empty-leaderboard";
+      loading.textContent = "Connecting to the shared void…";
+      byId("podium").append(loading);
+      byId("leader-list").replaceChildren();
+      byId("leaderboard-count").textContent = "Loading live rankings…";
+      return;
+    }
     const ranked = getRanked(activePeriod);
     const search = byId("leader-search").value.trim().toLowerCase();
     const top = ranked.slice(0, 3);
@@ -406,9 +659,9 @@
       const empty = document.createElement("div");
       empty.className = "empty-leaderboard";
       const title = document.createElement("strong");
-      title.textContent = "Nobody by that name. Probably for the best.";
+      title.textContent = search ? "Nobody by that name. Probably for the best." : "No Tokens have been earned here yet.";
       const sub = document.createElement("span");
-      sub.textContent = "Try another search.";
+      sub.textContent = search ? "Try another search." : "Be the first to make it meaningless.";
       empty.append(title, sub);
       holder.append(empty);
     } else {
@@ -567,10 +820,11 @@
       const delta = now - lastPulseAt;
       if (delta > 0 && delta <= MAX_COUNTED_GAP) {
         state.progressMs += delta;
-        while (state.progressMs >= EARNING_INTERVAL) {
+        if (state.progressMs >= EARNING_INTERVAL && !passiveClaimInFlight) {
           state.progressMs -= EARNING_INTERVAL;
-          awardTokens(EARNING_REWARD, "Five more minutes productively wasted.");
-          // awardTokens persists the completed interval before the next one is processed.
+          passiveClaimInFlight = true;
+          void awardTokens(EARNING_REWARD, "Five more minutes productively wasted.", "passive")
+            .finally(() => { passiveClaimInFlight = false; });
         }
         saveState();
       }
@@ -593,8 +847,14 @@
     if (dialog.open) dialog.close();
   }
 
-  function startAd() {
+  async function startAd() {
     if (adTickHandle || byId("watch-ad").disabled || byId("ad-dialog").open) return;
+    byId("watch-ad").disabled = true;
+    const remoteStarted = await startRemoteAd();
+    if (!remoteStarted) {
+      renderCooldown();
+      return;
+    }
     selectedAd = ads[Math.floor(Math.random() * ads.length)];
     adStartedAt = Date.now();
     adFinished = false;
@@ -624,7 +884,7 @@
       const remaining = Math.max(0, Math.ceil((AD_DURATION - elapsed) / 1000));
       byId("ad-countdown").textContent = remaining + "s";
       if (progress >= 1) {
-        finishAd();
+        void finishAd();
         return;
       }
     };
@@ -632,33 +892,36 @@
     update();
   }
 
-  function finishAd() {
-    if (adFinished) return;
-    adFinished = true;
+  async function finishAd() {
+    if (adFinished || byId("ad-dialog").dataset.claiming === "true") return;
+    byId("ad-dialog").dataset.claiming = "true";
     if (adTickHandle) window.clearInterval(adTickHandle);
     adTickHandle = null;
+    const granted = await awardTokens(AD_REWARD, "Survived a fake ad for " + selectedAd.brand.replace(/™/g, "") + ".", "ad");
+    byId("ad-dialog").dataset.claiming = "false";
+    adFinished = true;
     byId("ad-dialog").dataset.running = "false";
-    state.adCooldownUntil = Date.now() + AD_COOLDOWN;
-    state.adsWatched += 1;
-    byId("ad-progress-message").textContent = "Your attention has been successfully wasted.";
-    byId("ad-countdown").textContent = "Done";
+    byId("ad-progress-message").textContent = granted ? "Your attention has been successfully wasted." : "That ad didn't qualify for a reward. Please try again.";
+    byId("ad-countdown").textContent = granted ? "Done" : "No reward";
     byId("ad-progress-fill").style.width = "100%";
     byId("ad-progress").setAttribute("aria-valuenow", "100");
-    byId("ad-complete-message").hidden = false;
+    byId("ad-complete-message").hidden = !granted;
     byId("ad-done").disabled = false;
     byId("ad-done").textContent = "Back to nothing";
-    awardTokens(AD_REWARD, "Survived a fake ad for " + selectedAd.brand.replace(/™/g, "") + ".");
     renderCooldown();
     saveState();
   }
 
-  function cancelAd() {
+  function cancelAd() {  function cancelAd() {
     adRunToken += 1;
     if (adTickHandle) window.clearInterval(adTickHandle);
     adTickHandle = null;
     if (!adFinished) {
       byId("ad-dialog").dataset.running = "false";
+      cancelRemoteAd();
     }
+    byId("watch-ad").disabled = false;
+    renderCooldown();
   }
 
   function bindEvents() {
@@ -687,9 +950,10 @@
         tab.setAttribute("aria-selected", String(active));
       });
       renderLeaderboard();
+      if (backendReady) void refreshRemoteLeaderboard();
     }));
     byId("leader-search").addEventListener("input", renderLeaderboard);
-    byId("username-form").addEventListener("submit", event => {
+    byId("username-form").addEventListener("submit", async event => {
       event.preventDefault();
       const nextName = sanitizeName(byId("username-input").value);
       if (nextName.length < 2) {
@@ -698,11 +962,21 @@
         return;
       }
       byId("username-input").setCustomValidity("");
+      if (backendReady) {
+        try {
+          const { error } = await supabaseClient.rpc("token_update_username", { p_username: nextName });
+          if (error) throw error;
+        } catch (error) {
+          showToast("Name not synced", "The shared database could not save that alias. Please try again.", "!");
+          return;
+        }
+      }
       state.username = nextName;
       addActivity("Changed your guest alias to " + nextName + ".", "", "normal");
       saveState();
       renderAll(false);
-      showToast("Alias updated", "The leaderboard's fictional paparazzi have been informed.", "✎");
+      showToast("Alias updated", backendReady ? "Your name is now on the shared leaderboard." : "Your guest alias has been saved on this device.", "✎");
+      if (backendReady) void refreshRemoteLeaderboard();
       closeDialog(byId("profile-dialog"));
     });
     byId("username-input").addEventListener("input", () => byId("username-input").setCustomValidity(""));
@@ -802,6 +1076,7 @@
     bindEvents();
     renderAll(false);
     startEngine();
+    void initializeRemoteBackend();
   }
 
   boot();
