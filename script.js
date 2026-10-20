@@ -406,7 +406,7 @@
     byId("overview-ads").textContent = numberFormat.format(state.adsWatched || 0);
     byId("overview-prism").textContent = numberFormat.format(state.prismCoins || 0);
     byId("overview-next").textContent = formatCountdown(Math.max(0, EARNING_INTERVAL - state.progressMs));
-    const doubled = state.boosts.doubleUntil > Date.now() || state.boosts.prismUntil > Date.now();
+    const doubled = !backendReady && (state.boosts.doubleUntil > Date.now() || state.boosts.prismUntil > Date.now());
     byId("overview-next-note").textContent = "+" + (doubled ? "10" : "5") + " Tokens when the timer completes";
   }
 
