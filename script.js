@@ -71,6 +71,54 @@
   };
 
   const byId = id => document.getElementById(id);
+  // All sounds are synthesized locally with Web Audio; no audio files or network requests.
+  let audioContext = null;
+  let soundEnabled = true;
+  let hapticsEnabled = true;
+  let audioUnlocked = false;
+
+  function unlockAudio() {
+    if (!soundEnabled) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === "suspended") void audioContext.resume();
+      audioUnlocked = true;
+    } catch (error) { audioUnlocked = false; }
+  }
+
+  function playRewardSound(kind) {
+    if (!soundEnabled || !audioUnlocked || !audioContext) return;
+    try {
+      if (audioContext.state === "suspended") void audioContext.resume();
+      const now = audioContext.currentTime;
+      const patterns = {
+        reward: [{ f: 660, t: 0, d: .13 }, { f: 880, t: .09, d: .17 }, { f: 1175, t: .19, d: .24 }],
+        milestone: [{ f: 523, t: 0, d: .16 }, { f: 659, t: .12, d: .16 }, { f: 784, t: .24, d: .16 }, { f: 1047, t: .36, d: .38 }],
+        adStart: [{ f: 440, t: 0, d: .09 }, { f: 554, t: .1, d: .12 }],
+        adDone: [{ f: 587, t: 0, d: .14 }, { f: 784, t: .12, d: .16 }, { f: 988, t: .25, d: .28 }]
+      };
+      (patterns[kind] || patterns.reward).forEach(note => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(note.f, now + note.t);
+        gain.gain.setValueAtTime(0.0001, now + note.t);
+        gain.gain.exponentialRampToValueAtTime(kind === "milestone" ? 0.105 : 0.075, now + note.t + .018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + note.t + note.d);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(now + note.t);
+        osc.stop(now + note.t + note.d + .025);
+      });
+    } catch (error) { /* Audio is an enhancement; it must never block a reward. */ }
+  }
+
+  function rewardHaptic(milestone) {
+    if (!hapticsEnabled || typeof navigator.vibrate !== "function") return;
+    try { navigator.vibrate(milestone ? [24, 35, 48] : 22); } catch (error) {}
+  }
   const guestSuffix = () => Math.random().toString(36).slice(2, 6).toUpperCase();
   const freshState = () => ({
     version: 1,
@@ -301,6 +349,8 @@
   }
 
   function showRewardMoment(amount, milestone) {
+    playRewardSound(milestone ? "milestone" : "reward");
+    rewardHaptic(milestone);
     const downloadIcon = document.querySelector(".token-download-icon");
     if (downloadIcon && !document.body.classList.contains("reduce-motion")) {
       downloadIcon.classList.remove("is-downloaded");
@@ -900,6 +950,8 @@
       renderCooldown();
       return;
     }
+    unlockAudio();
+    playRewardSound("adStart");
     selectedAd = ads[Math.floor(Math.random() * ads.length)];
     adStartedAt = Date.now();
     adFinished = false;
@@ -960,6 +1012,7 @@
     }
     byId("ad-done").disabled = false;
     byId("ad-done").textContent = "Back to nothing";
+    if (granted) playRewardSound("adDone");
     renderCooldown();
     saveState();
   }
@@ -1036,6 +1089,18 @@
       document.body.classList.toggle("reduce-motion", !event.target.checked);
       try { localStorage.setItem("token-motion-enabled", event.target.checked ? "true" : "false"); } catch (error) {}
     });
+    byId("sound-toggle").addEventListener("change", event => {
+      soundEnabled = event.target.checked;
+      try { localStorage.setItem("token-sound-enabled", soundEnabled ? "true" : "false"); } catch (error) {}
+      if (soundEnabled) { unlockAudio(); playRewardSound("reward"); }
+    });
+    byId("haptics-toggle").addEventListener("change", event => {
+      hapticsEnabled = event.target.checked;
+      try { localStorage.setItem("token-haptics-enabled", hapticsEnabled ? "true" : "false"); } catch (error) {}
+      if (hapticsEnabled) rewardHaptic(false);
+    });
+    document.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
+    document.addEventListener("keydown", unlockAudio, { once: true });
     byId("watch-ad").addEventListener("click", startAd);
     byId("close-ad").addEventListener("click", () => {
       cancelAd();
@@ -1119,6 +1184,12 @@
     displayedBalance = state.balance;
     byId("year").textContent = String(new Date().getFullYear());
     try {
+      const savedSound = localStorage.getItem("token-sound-enabled");
+      soundEnabled = savedSound !== "false";
+      byId("sound-toggle").checked = soundEnabled;
+      const savedHaptics = localStorage.getItem("token-haptics-enabled");
+      hapticsEnabled = savedHaptics !== "false";
+      byId("haptics-toggle").checked = hapticsEnabled;
       const motion = localStorage.getItem("token-motion-enabled");
       if (motion === "false") {
         byId("motion-toggle").checked = false;
