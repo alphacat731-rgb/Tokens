@@ -301,6 +301,13 @@
   }
 
   function showRewardMoment(amount, milestone) {
+    const downloadIcon = document.querySelector(".token-download-icon");
+    if (downloadIcon && !document.body.classList.contains("reduce-motion")) {
+      downloadIcon.classList.remove("is-downloaded");
+      void downloadIcon.offsetWidth;
+      downloadIcon.classList.add("is-downloaded");
+      window.setTimeout(() => downloadIcon.classList.remove("is-downloaded"), 1250);
+    }
     const stage = byId("reward-stage");
     byId("reward-stage-amount").textContent = "+" + numberFormat.format(amount);
     byId("reward-stage-label").textContent = milestone ? "MILESTONE UNLOCKED" : "TOKENS EARNED";
@@ -375,6 +382,7 @@
 
   function renderTimer() {
     const progress = Math.min(1, state.progressMs / EARNING_INTERVAL);
+    byId("earning-rate").classList.toggle("is-almost-there", progress >= 0.965 && progress < 1);
     const dial = byId("timer-dial");
     dial.classList.toggle("is-almost-there", progress >= 0.965 && progress < 1);
     const remaining = Math.max(0, EARNING_INTERVAL - state.progressMs);

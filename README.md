@@ -42,6 +42,7 @@ Client-side balances can be changed by the device owner. This project is a playf
 - script.js — local guest state, earning timer, fake ads, profile, achievements, and sample leaderboard
 - assets/token-cube.png — the supplied, pixel-identical TOKEN cube symbol
 - assets/token-cube-dark.png — an alpha-preserving dark-stroke variant for favicon contrast
+- assets/token-download.png — the exact supplied cube-with-down-arrow icon, used to mark the five-minute Token download
 - .github/workflows/pages.yml — GitHub Pages deployment
 
 ## Privacy

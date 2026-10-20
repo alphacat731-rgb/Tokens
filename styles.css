@@ -41,3 +41,12 @@
 @keyframes token-achievement-pop{0%{transform:scale(1)}38%{transform:scale(1.075) rotate(-1deg)}72%{transform:scale(.99)}100%{transform:scale(1)}}
 @keyframes token-ad-reward-confirm{0%{opacity:.65;transform:translateY(4px) scale(.95)}65%{opacity:1;transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.timer-dial.is-almost-there .timer-dial-inner,.achievement.just-unlocked,.ad-complete-message.reward-confirmed{animation:none!important}.timer-dial.is-almost-there{box-shadow:0 0 0 3px rgba(179,138,69,.06)}}
+
+/* The supplied download-cube icon marks the five-minute drip as a Token download. */
+.earning-rate .token-download-icon{width:29px;height:29px;object-fit:contain;flex:none;filter:none;transform-origin:50% 45%;animation:token-download-idle 2.4s ease-in-out infinite}
+.earning-rate.is-almost-there .token-download-icon{animation:token-download-ready .75s ease-in-out infinite}
+.earning-rate .token-download-icon.is-downloaded{animation:token-download-complete .86s cubic-bezier(.18,1.55,.35,1) both}
+@keyframes token-download-idle{0%,100%{transform:translateY(0)}48%{transform:translateY(2px)}68%{transform:translateY(-1px)}}
+@keyframes token-download-ready{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(3px) scale(1.055)}70%{transform:translateY(-1px) scale(1)}}
+@keyframes token-download-complete{0%{transform:translateY(0) scale(1)}27%{transform:translateY(4px) scale(.9)}48%{transform:translateY(-5px) scale(1.18)}68%{transform:translateY(1px) scale(.98)}100%{transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.earning-rate .token-download-icon,.earning-rate.is-almost-there .token-download-icon,.earning-rate .token-download-icon.is-downloaded{animation:none!important;transform:none!important}}
