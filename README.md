@@ -65,3 +65,8 @@ Supabase's public anon key is meant for browser use only when paired with Row Le
 This remains a casual, no-value game: a static client can still be inspected or automated, and anonymous identities are not strong proof of a unique human. Do not use the board for anything valuable or safety-critical. If the shared service is unreachable, the page falls back to local-only rewards and clearly returns to demo mode.
 
 The Supabase browser client is loaded only when both configuration values are present. No service secret is required, and no paid tier is required by this code itself.
+
+
+### Global board setup note
+
+The global leaderboard is not active on the live site until a Supabase project is configured. This repository contains the integration and SQL, but a project's URL/public key and its database need to be supplied by the project owner. Until then, TOKEN deliberately shows the labeled demo board.

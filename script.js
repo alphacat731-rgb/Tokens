@@ -220,6 +220,10 @@
             state.balance = Math.max(0, Number(result.balance) || 0);
             state.totalEarned = Math.max(0, Number(result.all_time_tokens) || 0);
             state.adsWatched = Math.max(0, Number(result.ads_watched) || 0);
+            if (rewardType === "passive") {
+              const waitMs = Math.max(0, Number(result.retry_after_seconds) || 0) * 1000;
+              state.progressMs = Math.max(0, EARNING_INTERVAL - waitMs);
+            }
             const cooldown = Date.parse(result.ad_cooldown_until || "");
             if (Number.isFinite(cooldown)) state.adCooldownUntil = cooldown;
           }
@@ -236,7 +240,10 @@
       } else {
         state.balance += amount;
         state.totalEarned += amount;
-        if (rewardType === "ad") state.adsWatched += 1;
+        if (rewardType === "ad") {
+          state.adsWatched += 1;
+          state.adCooldownUntil = Date.now() + AD_COOLDOWN;
+        }
       }
       addActivity(reason, "+" + numberFormat.format(amount), "reward");
       checkMilestones(oldTotal);
@@ -254,7 +261,10 @@
       const oldTotal = state.totalEarned;
       state.balance += amount;
       state.totalEarned += amount;
-      if (rewardType === "ad") state.adsWatched += 1;
+      if (rewardType === "ad") {
+        state.adsWatched += 1;
+        state.adCooldownUntil = Date.now() + AD_COOLDOWN;
+      }
       addActivity(reason, "+" + numberFormat.format(amount), "reward");
       checkMilestones(oldTotal);
       saveState();
@@ -277,7 +287,6 @@
     byId("reward-stage-label").textContent = milestone ? "MILESTONE UNLOCKED" : "TOKENS EARNED";
     stage.classList.remove("is-visible");
     byId("balance").classList.remove("balance-pop");
-    byId("wallet-card");
     void stage.offsetWidth;
     stage.classList.add("is-visible");
     byId("balance").classList.add("balance-pop");
@@ -900,6 +909,7 @@
     const granted = await awardTokens(AD_REWARD, "Survived a fake ad for " + selectedAd.brand.replace(/™/g, "") + ".", "ad");
     byId("ad-dialog").dataset.claiming = "false";
     adFinished = true;
+    if (!granted) cancelRemoteAd();
     byId("ad-dialog").dataset.running = "false";
     byId("ad-progress-message").textContent = granted ? "Your attention has been successfully wasted." : "That ad didn't qualify for a reward. Please try again.";
     byId("ad-countdown").textContent = granted ? "Done" : "No reward";
