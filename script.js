@@ -400,9 +400,20 @@
     }, milestone ? 1900 : 1450);
   }
 
+  function renderOverview() {
+    if (!byId("overview-earned")) return;
+    byId("overview-earned").textContent = numberFormat.format(state.totalEarned || 0);
+    byId("overview-ads").textContent = numberFormat.format(state.adsWatched || 0);
+    byId("overview-prism").textContent = numberFormat.format(state.prismCoins || 0);
+    byId("overview-next").textContent = formatCountdown(Math.max(0, EARNING_INTERVAL - state.progressMs));
+    const doubled = state.boosts.doubleUntil > Date.now() || state.boosts.prismUntil > Date.now();
+    byId("overview-next-note").textContent = "+" + (doubled ? "10" : "5") + " Tokens when the timer completes";
+  }
+
   function renderAll(allowBalanceAnimation) {
     renderBalance(allowBalanceAnimation);
     renderTimer();
+    renderOverview();
     renderProfile();
     renderActivity();
     renderAchievements();
@@ -606,6 +617,7 @@
     byId("wallet-progress-fill").style.width = (progress * 100).toFixed(3) + "%";
     byId("wallet-progress").setAttribute("aria-valuenow", String(Math.round(progress * 100)));
     byId("wallet-percent").textContent = Math.floor(progress * 100) + "% complete";
+    renderOverview();
     const status = byId("timer-status");
     if (state.progressMs > 0) status.textContent = "The clock is ticking. You are technically at work.";
     else status.textContent = "Your shift has begun. Try to look busy.";
