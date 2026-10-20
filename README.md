@@ -2,9 +2,9 @@
 
 **Absolutely nothing. Earn it anyway.**
 
-TOKEN is a polished, deliberately pointless virtual-currency website. Leave the page open to earn five Tokens every five minutes, watch fictional eight-second advertisements for bonus Tokens, collect achievements, and compare your score with a clearly labeled sample leaderboard.
+TOKEN is a polished, deliberately pointless virtual-currency website. Leave the page open to earn five Tokens every five minutes, watch fictional eight-second advertisements for bonus Tokens, spend Tokens on local earning boosts, collect achievements, and compare your score with a clearly labeled sample leaderboard.
 
-Tokens have no real-world value. They cannot be purchased, transferred, redeemed, or spent.
+Tokens have no real-world value and cannot be purchased with real money, transferred, or redeemed. They can be spent inside the site on local earning boosts.
 
 ## Run locally
 
@@ -31,7 +31,9 @@ The repository URL and the expected Pages URL are not proof of a successful depl
 - To avoid granting offline time after a crash, device sleep, or long browser suspension, heartbeat gaps longer than about 65 seconds are ignored. On resume, the timer continues from saved progress. Browsers differ, so this is a practical approximation, not proof of attention or tamper resistance.
 - Fake advertisements are entirely simulated, take about eight seconds, award fifteen Tokens only after completion, and apply a short cooldown. Closing early gives no reward. Each fictional creative is randomized; no ad network is contacted.
 - Reward moments include a rolling balance counter, a larger burst of cube particles, a reward-stage animation, milestone celebrations, and locally synthesized sound effects. Optional vibration works on browsers/devices that expose the Vibration API. Sound and haptics can be toggled in Settings and are saved locally. Browsers require a user gesture before audio can play.
-- All profile and balance information is local to that browser. It does not synchronize across devices.
+- The Token Shop sells three local boosts: Double Shift (250 Tokens) doubles passive payouts for 15 minutes; Ad Bonus Pack (180 Tokens) adds 15 Tokens to each of the next three completed fake ads; Time Skip (75 Tokens) advances the passive timer by 60 seconds. Purchases deduct from the existing balance and the boost state is saved in the same localStorage guest record.
+- Shop purchases are intentionally local-only. If a shared Supabase balance is configured, shop purchases are paused rather than spending a server balance that the local shop cannot update. Boosts do not sync across devices.
+- All profile and balance information is local to that browser by default. It does not synchronize across devices.
 - The leaderboard is fictional sample data. It is not a shared or live ranking.
 
 Client-side balances can be changed by the device owner. This project is a playful frontend prototype, not a secure financial system.
@@ -40,7 +42,7 @@ Client-side balances can be changed by the device owner. This project is a playf
 
 - index.html — accessible application shell and dialogs
 - styles.css — responsive design system, animations, and reduced-motion support
-- script.js — local guest state, earning timer, fake ads, profile, achievements, sample leaderboard, synthesized reward sounds, and haptics
+- script.js — local guest state, earning timer, fake ads, Token Shop boosts, profile, achievements, sample leaderboard, synthesized reward sounds, and haptics
 - assets/token-cube.png — the supplied, pixel-identical TOKEN cube symbol
 - assets/token-cube-dark.png — an alpha-preserving dark-stroke variant for favicon contrast
 - assets/token-download.png — the exact supplied cube-with-down-arrow icon, used to mark the five-minute Token download
