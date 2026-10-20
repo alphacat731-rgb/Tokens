@@ -2,7 +2,7 @@
 
 **Absolutely nothing. Earn it anyway.**
 
-TOKEN is a polished, deliberately pointless virtual-currency website. Leave the page open to earn five Tokens every five minutes, watch fictional eight-second advertisements for bonus Tokens, spend Tokens on local earning boosts, exchange regular Tokens for Prism Coins, collect achievements, and compare your score with a clearly labeled sample leaderboard.
+TOKEN is a polished, deliberately pointless virtual-currency website. The interface starts in Studio mode, with a saved Classic mode switch in the navigation to restore the original layout. Leave the page open to earn five Tokens every five minutes, watch fictional eight-second advertisements for bonus Tokens, spend Tokens on local earning boosts, exchange regular Tokens for Prism Coins, collect achievements, and compare your score with a clearly labeled sample leaderboard.
 
 Tokens have no real-world value and cannot be purchased with real money, transferred, or redeemed. They can be spent inside the site on local earning boosts.
 
@@ -40,8 +40,8 @@ Client-side balances can be changed by the device owner. This project is a playf
 
 ## Project files
 
-- index.html — accessible application shell, Google Fonts Material Symbols Rounded icons, and dialogs
-- styles.css — responsive design system, animations, reduced-motion support, and the uploaded Prism diamond symbol embedded as an alpha mask
+- index.html — accessible application shell, persistent Studio / Classic UI switch, Google Fonts Material Symbols Rounded icons, and dialogs
+- styles.css — responsive Classic and Studio design systems, animations, reduced-motion support, and the uploaded Prism diamond symbol embedded as an alpha mask
 - script.js — local guest state, earning timer, fake ads, Token Shop boosts, profile, achievements, sample leaderboard, synthesized reward sounds, and haptics
 - assets/token-cube.png — the supplied, pixel-identical TOKEN cube symbol
 - assets/token-cube-dark.png — an alpha-preserving dark-stroke variant for favicon contrast
