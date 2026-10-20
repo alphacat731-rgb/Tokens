@@ -58,3 +58,40 @@
 .reward-stage.is-visible .reward-stage-ring{animation:reward-ring-expand .9s cubic-bezier(.16,1,.3,1) both}
 .reward-stage.is-visible .reward-stage-ring-two{animation-delay:.12s}
 @media(prefers-reduced-motion:reduce){.reward-stage.is-visible .reward-stage-cube,.reward-stage.is-visible .reward-stage-ring,.reward-stage.is-visible .reward-stage-ring-two{animation:none!important}.reward-spark-particle{display:none}}
+
+
+/* Local Token boost shop */
+.shop-status-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 17px;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:13px;color:#858880;font-size:9px;letter-spacing:.09em;font-weight:800}
+.shop-status-row>div:first-child{display:flex;align-items:center;gap:8px}
+.shop-status-dot{width:7px;height:7px;flex:none;border-radius:50%;background:#6c9b73;box-shadow:0 0 0 3px rgba(108,155,115,.12)}
+.shop-wallet{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.shop-wallet strong{font-size:17px;letter-spacing:-.04em;color:var(--ink);font-variant-numeric:tabular-nums}
+.shop-wallet span{font-size:8px;color:var(--gold-deep)}
+.shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.shop-item{min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:21px;box-shadow:0 8px 28px rgba(32,33,31,.025);transition:transform .25s var(--ease),border-color .25s,box-shadow .25s}
+.shop-item:hover{transform:translateY(-3px);border-color:#d9c9a9;box-shadow:0 15px 34px rgba(32,33,31,.06)}
+.shop-item-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:19px}
+.shop-item-icon{width:49px;height:49px;border-radius:15px;display:grid;place-items:center;font-size:18px;font-weight:850;letter-spacing:-.06em}
+.boost-double{background:#f1e7d3;color:#94713a}
+.boost-ad{background:#e8eee8;color:#527b5d;font-size:14px}
+.boost-time{background:#e9e8f4;color:#69659b;font-size:25px}
+.shop-item-tag{font-size:7px;letter-spacing:.1em;font-weight:850;color:#a0a29b;text-align:right}
+.shop-item h3{font-size:19px;letter-spacing:-.04em;margin:0 0 8px}
+.shop-item-description{min-height:65px;font-size:11px;line-height:1.8;color:#858880;margin-bottom:20px}
+.shop-item-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 0;border-top:1px solid #eeefe9;margin-top:auto}
+.shop-item-meta>span{font-size:8px;letter-spacing:.09em;color:#a0a29b;font-weight:800}
+.shop-item-meta strong{font-size:15px;white-space:nowrap;letter-spacing:-.03em}
+.shop-item-meta small{font-size:8px;color:#999b94;letter-spacing:.08em}
+.shop-buy{width:100%;min-height:43px;font-size:11px}
+.shop-buy:disabled{opacity:.42;filter:saturate(.5)}
+.shop-buy.purchase-flash{animation:shop-purchase-flash .65s var(--ease)}
+@keyframes shop-purchase-flash{0%{box-shadow:0 0 0 0 rgba(179,138,69,.0)}35%{box-shadow:0 0 0 5px rgba(179,138,69,.22);transform:scale(1.025)}100%{box-shadow:0 0 0 0 rgba(179,138,69,0);transform:scale(1)}}
+.active-boosts{display:flex;align-items:center;gap:13px;margin-top:14px;padding:15px 17px;background:#f0f0ea;border:1px solid #e8e8e1;border-radius:13px;color:#858880;font-size:10px;line-height:1.65}
+.active-boosts-label{flex:none;font-size:8px;letter-spacing:.12em;font-weight:850;color:#a0a29b}
+.active-boosts.has-active-boosts{background:#f5efe2;border-color:#e8dcc4;color:#6f5a36}
+.active-boosts.has-active-boosts .active-boosts-label{color:#94713a}
+.shop-footnote{margin:12px 2px 0;font-size:9px;line-height:1.8;color:#a0a29b}
+.activity-item.purchase .activity-icon,.activity-entry.purchase .activity-icon{color:var(--gold)}
+@media(max-width:850px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-item-description{min-height:0}}
+@media(max-width:560px){.shop-grid{grid-template-columns:1fr;gap:11px}.shop-item{padding:18px}.shop-item-description{margin-bottom:14px}.shop-status-row{align-items:flex-start;flex-direction:column;gap:9px}.active-boosts{align-items:flex-start;flex-direction:column;gap:5px}.shop-item-top{margin-bottom:13px}}
+@media(prefers-reduced-motion:reduce){.shop-item,.shop-buy.purchase-flash{animation:none;transition:none}}
