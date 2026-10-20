@@ -29,7 +29,8 @@ The repository URL and the expected Pages URL are not proof of a successful depl
 - Five whole Tokens are awarded for each completed five-minute interval while an active tab is heartbeating.
 - A localStorage lease elects a single tab to maintain the timer. Closing the active page releases the lease; another open tab may take over.
 - To avoid granting offline time after a crash, device sleep, or long browser suspension, heartbeat gaps longer than about 65 seconds are ignored. On resume, the timer continues from saved progress. Browsers differ, so this is a practical approximation, not proof of attention or tamper resistance.
-- Fake advertisements are entirely simulated, take about eight seconds, award fifteen Tokens only after completion, and apply a short cooldown. Closing early gives no reward.
+- Fake advertisements are entirely simulated, take about eight seconds, award fifteen Tokens only after completion, and apply a short cooldown. Closing early gives no reward. Each fictional creative is randomized; no ad network is contacted.
+- Reward moments include a rolling balance counter, a larger burst of cube particles, a reward-stage animation, milestone celebrations, and locally synthesized sound effects. Optional vibration works on browsers/devices that expose the Vibration API. Sound and haptics can be toggled in Settings and are saved locally. Browsers require a user gesture before audio can play.
 - All profile and balance information is local to that browser. It does not synchronize across devices.
 - The leaderboard is fictional sample data. It is not a shared or live ranking.
 
@@ -39,7 +40,7 @@ Client-side balances can be changed by the device owner. This project is a playf
 
 - index.html — accessible application shell and dialogs
 - styles.css — responsive design system, animations, and reduced-motion support
-- script.js — local guest state, earning timer, fake ads, profile, achievements, and sample leaderboard
+- script.js — local guest state, earning timer, fake ads, profile, achievements, sample leaderboard, synthesized reward sounds, and haptics
 - assets/token-cube.png — the supplied, pixel-identical TOKEN cube symbol
 - assets/token-cube-dark.png — an alpha-preserving dark-stroke variant for favicon contrast
 - assets/token-download.png — the exact supplied cube-with-down-arrow icon, used to mark the five-minute Token download
